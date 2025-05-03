@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QFileDialog, QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog, QFormLayout, QDialogButtonBox
-from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QObject, pyqtProperty, QEasingCurve
+from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QObject, pyqtProperty, QEasingCurve, QThread, pyqtSignal
 from PyQt5.QtGui import QPainter, QColor, QFont, QFontMetrics, QPen, QLinearGradient
 import psutil
 import os
@@ -7,6 +7,7 @@ import json
 import sys
 import time
 import datetime
+import threading
 from loguru import logger
 
 
@@ -109,20 +110,153 @@ class MonitorPanel(QDialog):
             minutes, seconds = divmod(remainder, 60)
             self.setWindowTitle(f"{self.instance_name} 运行时间：{int(hours)} 小时 {int(minutes)} 分钟 {int(seconds)} 秒")
 
+class LogReaderThread(QThread):
+    log_data_ready = pyqtSignal(str)
+    log_error = pyqtSignal(str)
+    
+    def __init__(self, log_path):
+        super().__init__()
+        self.log_path = log_path
+        self.last_log_size = 0
+        self.running = True
+        
+    def run(self):
+        while self.running:
+            try:
+                if not os.path.exists(self.log_path):
+                    self.log_error.emit(f'日志文件不存在: {self.log_path}')
+                    time.sleep(1)
+                    continue
+                    
+                try:
+                    file_size = os.path.getsize(self.log_path)
+                    if file_size != self.last_log_size:
+                        try:
+                            with open(self.log_path, 'r', encoding='utf-8', errors='replace') as f:
+                                # 先尝试定位到文件末尾附近
+                                f.seek(max(0, file_size - 50 * 100))  # 从文件末尾前50KB开始读取
+                                # 丢弃第一行，因为可能是不完整的行
+                                f.readline()
+                                # 读取剩余行
+                                lines = f.readlines()
+                                if len(lines) > 100:
+                                    lines = lines[-100:]
+                                new_log = ''.join(lines)
+                            
+                            self.log_data_ready.emit(new_log)
+                            self.last_log_size = file_size
+                        except UnicodeDecodeError as ude:
+                            logger.warning('日志文件编码错误: {}', str(ude))
+                            self.log_error.emit(f'日志文件编码错误，尝试使用替代编码读取')
+                            # 尝试使用替代编码
+                            try:
+                                with open(self.log_path, 'r', encoding='gbk', errors='replace') as f:
+                                    lines = f.readlines()
+                                    if len(lines) > 100:
+                                        lines = lines[-100:]
+                                    new_log = ''.join(lines)
+                                self.log_data_ready.emit(new_log)
+                                self.last_log_size = file_size
+                            except Exception as e2:
+                                self.log_error.emit(f'使用替代编码读取日志失败: {str(e2)}')
+                        except Exception as e:
+                            self.log_error.emit(f'读取日志文件时发生错误: {str(e)}')
+                except Exception as e:
+                    self.log_error.emit(f'获取文件大小时发生错误: {str(e)}')
+                
+                time.sleep(0.5)
+            except Exception as e:
+                self.log_error.emit(f'日志读取线程发生错误: {str(e)}')
+                time.sleep(1)
+    
+    def stop(self):
+        self.running = False
+        self.quit()
+        self.wait()
+
+
+class MonitorPanel(QDialog):
+    def __init__(self, instance_name, pid, log_path):
+        try:
+            logger.debug('初始化监控面板 实例:{} PID:{} 日志路径:{}', instance_name, pid, log_path)
+            super().__init__()
+            self.instance_name = instance_name
+            self.pid = pid
+            self.log_path = log_path
+            self.cpu_usage = CircleProgress()
+            self.mem_usage = CircleProgress()
+            self.log_text = QTextEdit()
+            self.command_input = QLineEdit()
+            self.command_button = QPushButton('发送')
+            self.command_button.clicked.connect(self.send_command)
+            self.stop_button = QPushButton('关闭实例')
+            self.stop_button.clicked.connect(self.stop_instance)
+            self.stop_button.setStyleSheet("QPushButton { background-color: red; color: white; }")
+            self.log_timer = QTimer()
+            self.log_timer.timeout.connect(self.update_log)
+            self.resource_timer = QTimer()
+            self.resource_timer.timeout.connect(self.update_resource_usage)
+            self.resource_timer.start(1000)
+            self.current_log = ""
+            self.start_time = datetime.datetime.now() - datetime.timedelta(seconds=time.time() - psutil.Process(self.pid).create_time())
+            self.last_log_size = 0
+            self.layout = QVBoxLayout()
+            self.layout.addWidget(self.cpu_usage)
+            self.layout.addWidget(self.mem_usage)
+            self.layout.addWidget(self.stop_button)
+            self.layout.addWidget(self.log_text)
+            self.layout.addWidget(self.command_input)
+            self.layout.addWidget(self.command_button)
+            self.setLayout(self.layout)
+            self.log_text.setReadOnly(True)
+            self.log_text.setLineWrapMode(QTextEdit.NoWrap)
+            self.log_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+            self.command_input.returnPressed.connect(self.send_command)
+            self.command_history = []
+            self.log_timer.start(1000)
+            self.update_log()
+            self.update_resource_usage()
+        except Exception as e:
+            logger.exception('监控面板初始化失败')
+            raise
+
+    def update_resource_usage(self):
+        try:
+            if self.pid and psutil.pid_exists(self.pid):
+                proc = psutil.Process(self.pid)
+                self.cpu_usage.value = proc.cpu_percent(interval=1)
+                self.mem_usage.value = proc.memory_info().rss / 1024 / 1024
+                self.update_uptime()
+            else:
+                self.cpu_usage.value = 0
+                self.mem_usage.value = 0
+                logger.warning('无效PID:{} 进程状态:{}', self.pid, psutil.pid_exists(self.pid))
+        except Exception as e:
+            logger.error(f"更新资源使用情况时发生错误: {e}")
+
+    def update_uptime(self):
+        if self.start_time:
+            uptime = datetime.datetime.now() - self.start_time
+            hours, remainder = divmod(uptime.total_seconds(), 3600)
+            minutes, seconds = divmod(remainder, 60)
+            self.setWindowTitle(f"{self.instance_name} 运行时间：{int(hours)} 小时 {int(minutes)} 分钟 {int(seconds)} 秒")
+            
     def update_log(self):
-        if not os.path.exists(self.log_path):
-            logger.warning('日志文件不存在: {}', self.log_path)
-            return
-        file_size = os.path.getsize(self.log_path)
-        if file_size != self.last_log_size:
-            with open(self.log_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-                if len(lines) > 100:
-                    lines = lines[-100:]
-                new_log = ''.join(lines)
-                self.log_text.setText(new_log)
-                self.log_text.verticalScrollBar().setValue(self.log_text.verticalScrollBar().maximum())
-            self.last_log_size = file_size
+        # 使用单一的日志读取线程实例
+        if not hasattr(self, 'log_reader'):
+            logger.debug('创建日志读取线程: {}', self.log_path)
+            self.log_reader = LogReaderThread(self.log_path)
+            self.log_reader.log_data_ready.connect(self.update_log_text)
+            self.log_reader.log_error.connect(lambda msg: logger.warning(msg))
+            self.log_reader.last_log_size = self.last_log_size  # 传递当前已知的日志大小
+        
+        # 每次调用时启动线程进行一次读取
+        if not self.log_reader.isRunning():
+            self.log_reader.start()
+    
+    def update_log_text(self, log_text):
+        self.log_text.setText(log_text)
+        self.log_text.verticalScrollBar().setValue(self.log_text.verticalScrollBar().maximum())
 
     def send_command(self):
         command = self.command_input.text()
@@ -136,6 +270,32 @@ class MonitorPanel(QDialog):
                 self.command_input.clear()
             except Exception as e:
                 print(f"发送命令时发生错误: {e}")
+                
+    def stop_instance(self):
+        reply = QMessageBox.question(self, '确认', '你确定要关闭这个实例吗？', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            if self.pid:
+                try:
+                    proc = psutil.Process(self.pid)
+                    proc.terminate()
+                    self.log_timer.stop()
+                    # 停止日志读取线程
+                    if hasattr(self, 'log_reader'):
+                        logger.debug('停止日志读取线程')
+                        self.log_reader.stop()
+                    self.pid = None
+                    self.close()
+                except Exception as e:
+                    logger.error(f"终止进程时发生错误: {e}")
+
+    def closeEvent(self, event):
+        self.log_timer.stop()
+        self.resource_timer.stop()
+        # 停止日志读取线程
+        if hasattr(self, 'log_reader'):
+            logger.debug('停止日志读取线程')
+            self.log_reader.stop()
+        event.accept()
 
     def stop_instance(self):
         reply = QMessageBox.question(self, '确认', '你确定要关闭这个实例吗？', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -145,6 +305,10 @@ class MonitorPanel(QDialog):
                     proc = psutil.Process(self.pid)
                     proc.terminate()
                     self.log_timer.stop()
+                    # 停止日志读取线程
+                    if hasattr(self, 'log_reader'):
+                        logger.debug('停止日志读取线程')
+                        self.log_reader.stop()
                     self.pid = None
                     self.close()
                 except Exception as e:
@@ -153,6 +317,10 @@ class MonitorPanel(QDialog):
     def closeEvent(self, event):
         self.log_timer.stop()
         self.resource_timer.stop()
+        # 停止日志读取线程
+        if hasattr(self, 'log_reader'):
+            logger.debug('停止日志读取线程')
+            self.log_reader.stop()
         event.accept()
 
 

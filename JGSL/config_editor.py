@@ -9,6 +9,7 @@ class ConfigEditorDialog(QDialog):
     def __init__(self, parent=None, config_path=None):
         super().__init__(parent)
         self.setWindowTitle('服务器配置编辑器')
+        self.setGeometry(100, 100, 800, 600)
         self.setWindowModality(Qt.ApplicationModal)
         self.config_path = config_path
 

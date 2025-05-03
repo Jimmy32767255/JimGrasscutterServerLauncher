@@ -1,0 +1,10 @@
+/JGSL/__pycache__/
+*.pyc
+*.log
+*.bak
+*.tmp
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar
