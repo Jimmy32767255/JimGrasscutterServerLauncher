@@ -23,14 +23,29 @@ class DownloadThread(QThread):
             with requests.get(self.url, stream=True) as r:
                 total_size = int(r.headers.get('content-length', 0))
                 downloaded = 0
-                with open(self.save_path, 'wb') as f:
-                    for chunk in r.iter_content(1024):
-                        f.write(chunk)
-                        downloaded += len(chunk)
-                        progress = int(downloaded / total_size * 100)
-                        self.logger.trace(f'下载进度 {progress}%')
-                        self.progress_signal.emit(progress)
-                self.finished_signal.emit(self.save_path)
+                try:
+                    try:
+                        os.makedirs(os.path.dirname(self.save_path), exist_ok=True)
+                        test_file = os.path.join(os.path.dirname(self.save_path), 'test.tmp')
+                        with open(test_file, 'w') as f:
+                            f.write('test')
+                        os.remove(test_file)
+                    except Exception as e:
+                        raise PermissionError(f'目录 {os.path.dirname(self.save_path)} 无写入权限: {e}')
+                    with open(self.save_path, 'wb') as f:
+                        for chunk in r.iter_content(1024):
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            progress = int(downloaded / total_size * 100)
+                            self.logger.trace(f'下载进度 {progress}%')
+                            self.progress_signal.emit(progress)
+                    self.finished_signal.emit(self.save_path)
+                except PermissionError as e:
+                    self.logger.error(f'文件写入权限检查失败: {e}')
+                    self.finished_signal.emit(f'Error: {str(e)}')
+                except Exception as e:
+                    self.logger.error(f'文件写入失败: {e}')
+                    self.finished_signal.emit(f'Error: {str(e)}')
         except Exception as e:
             self.logger.error(f'下载失败: {e} | URL: {self.url}')
             self.finished_signal.emit(f'Error: {str(e)}')
@@ -97,6 +112,8 @@ class DownloadTab(QWidget):
         }
         """)
         self.status_label = QLabel('准备就绪')
+        self.unavailable_label = QLabel('<h2 style="color: red;">⚠️ 该功能暂时不可用，正在修复中！</h2>')
+        self.unavailable_label.setAlignment(Qt.AlignCenter)
         self.thread_count_label = QLabel('线程数: 64')
         self.thread_count_slider = QSlider(Qt.Horizontal)
         self.thread_count_slider.setRange(1, 128)
@@ -107,6 +124,7 @@ class DownloadTab(QWidget):
         layout = QVBoxLayout()
         layout.setSpacing(20)
         layout.addWidget(self.tree,7)
+        layout.addWidget(self.unavailable_label)
         layout.addWidget(self.download_btn)
         layout.addWidget(self.progress_bar)
         layout.addWidget(self.status_label)
@@ -148,8 +166,15 @@ class DownloadTab(QWidget):
         if not selected_items:
             return
         save_path = os.path.join(self.root_dir, 'DownloadTemp')
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
+        try:
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            if not os.access(save_path, os.W_OK):
+                raise PermissionError(f'目录 {save_path} 无写入权限')
+        except Exception as e:
+            self.logger.error(f'目录检查失败: {e}')
+            QMessageBox.critical(self, '错误', f'目录检查失败: {e}')
+            return
         for selected_item in selected_items:
             category = selected_item.parent().text(0)
             if category in ['服务端核心', '插件', '卡池配置文件']:
@@ -233,14 +258,22 @@ class DownloadTab(QWidget):
             dest_dir = os.path.join(dest_dir, 'ExcelBinOutput')
         if version:
             dest_dir = os.path.join(dest_dir, version)
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        dest_dir = os.path.abspath(dest_dir)
-        dest_path = os.path.normpath(os.path.join(dest_dir, file_name))
-        if os.path.exists(dest_path):
-            os.remove(dest_path)
         try:
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+            if not os.access(dest_dir, os.W_OK):
+                raise PermissionError(f'目录 {dest_dir} 无写入权限')
+            dest_dir = os.path.abspath(dest_dir)
+            dest_path = os.path.normpath(os.path.join(dest_dir, file_name))
+            if os.path.exists(dest_path):
+                os.remove(dest_path)
             shutil.move(file_path, dest_path)
+        except PermissionError as e:
+            self.logger.error(f'文件移动权限检查失败: {e}')
+            QMessageBox.critical(self, '错误', f'文件移动权限检查失败: {e}')
+        except Exception as e:
+            self.logger.error(f'文件移动失败: {e}')
+            QMessageBox.critical(self, '错误', f'文件移动失败: {e}')
         except Exception as e:
             self.logger.error(f'文件移动失败: {e}')
             QMessageBox.critical(self, '错误', f'文件移动失败: {e}')
