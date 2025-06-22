@@ -1,7 +1,11 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton, QLineEdit, QListWidget, QHBoxLayout, QMessageBox, QInputDialog, QTreeWidget, QTreeWidgetItem, QSplitter, QMenu, QAction, QWidget, QLabel, QApplication
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLineEdit, QListWidget, QHBoxLayout, QMessageBox, QInputDialog, QTreeWidget, QTreeWidgetItem, QSplitter, QMenu, QAction, QWidget, QLabel, QApplication
 from PyQt5.QtCore import Qt
 from loguru import logger
 import pymongo
+import json
+from bson.objectid import ObjectId
+from PyQt5.QtWidgets import QApplication, QLabel
+import sys
 
 # 辅助函数：应用样式到消息框
 def apply_message_box_style(msg_box):
@@ -222,7 +226,6 @@ class DatabaseEditorDialog(QDialog):
             if query_str:
                 try:
                     # 尝试将查询字符串解析为字典
-                    import json
                     query_filter = json.loads(query_str)
                 except json.JSONDecodeError:
                     msg_box = QMessageBox(self)
@@ -591,7 +594,6 @@ class DatabaseEditorDialog(QDialog):
             
         if ok and doc_content:
             try:
-                import json
                 new_doc = json.loads(doc_content)
                 db = self.client[self.current_db_name]
                 collection = db[self.current_collection_name]
@@ -635,8 +637,6 @@ class DatabaseEditorDialog(QDialog):
             return
 
         try:
-            import json
-            # 为了更好的编辑体验，将ObjectId转换为字符串，但提交时可能需要转回
             editable_doc = json.dumps(original_doc, indent=4, default=str) 
         except Exception as e:
             QMessageBox.critical(self, "错误", f"准备编辑的文档数据序列化失败\n{e}")
@@ -750,7 +750,6 @@ class DatabaseEditorDialog(QDialog):
         doc_id_str = doc_id_text.split(":", 1)[1].strip()
         try:
             # 尝试将ID字符串转换为ObjectId（如果是）
-            from bson.objectid import ObjectId
             try:
                 doc_id = ObjectId(doc_id_str)
             except:
@@ -802,11 +801,7 @@ class DatabaseEditorDialog(QDialog):
             apply_message_box_style(error_box)
             error_box.exec_()
 
-# 为了方便测试，添加一个简单的启动入口
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication, QLabel
-    import sys
-
     # 模拟一个 MongoDB 客户端连接 (需要本地运行 MongoDB 服务)
     class MockMongoClient:
         def __init__(self, uri, serverSelectionTimeoutMS=None):

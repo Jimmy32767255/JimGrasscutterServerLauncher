@@ -8,10 +8,9 @@
 import ctypes
 from ctypes import wintypes
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt
 from loguru import logger
+from PyQt5.QtWidgets import QGraphicsBlurEffect
 
-# Windows API definitions for blur
 ACCENT_DISABLED = 0
 ACCENT_ENABLE_GRADIENT = 1
 ACCENT_ENABLE_TRANSPARENTGRADIENT = 2
@@ -34,7 +33,6 @@ class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
         ("SizeOfData", wintypes.ULONG)
     ]
 
-# Function pointers
 SetWindowCompositionAttribute = ctypes.windll.user32.SetWindowCompositionAttribute
 SetWindowCompositionAttribute.argtypes = (wintypes.HWND, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA))
 SetWindowCompositionAttribute.restype = wintypes.BOOL
@@ -60,7 +58,6 @@ class BackgroundEffect:
 
         if not self._try_apply_native_blur():
             logger.warning("无法应用原生 Windows 模糊，将回退到 QGraphicsBlurEffect。这可能无法在透明背景下正常工作或导致错误。")
-            from PyQt5.QtWidgets import QGraphicsBlurEffect
             self.blur_effect_fallback = QGraphicsBlurEffect()
             self.blur_effect_fallback.setBlurRadius(blur_radius)
             self.widget.setGraphicsEffect(self.blur_effect_fallback)
@@ -77,7 +74,7 @@ class BackgroundEffect:
             accent_policy.GradientColor = 0 # 对于 BLURBEHIND 通常不使用颜色
 
             data = WINDOWCOMPOSITIONATTRIBDATA()
-            data.Attribute = 19  # WCA_ACCENT_POLICY
+            data.Attribute = 19
             data.Data = ctypes.pointer(accent_policy)
             data.SizeOfData = ctypes.sizeof(accent_policy)
 

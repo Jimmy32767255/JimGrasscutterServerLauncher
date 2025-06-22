@@ -5,7 +5,7 @@
 自定义窗口标题栏
 """
 
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
 from loguru import logger

@@ -8,7 +8,6 @@ from loguru import logger
 import patoolib
 import webbrowser
 import zipfile
-import tempfile
 
 class DownloadThread(QThread):
     progress_signal = pyqtSignal(int)
@@ -225,7 +224,7 @@ class DownloadTab(QWidget):
             self.logger.error(f'下载列表配置文件JSON解析错误: {config_path} - {e}')
             QMessageBox.critical(self, '错误', f'下载列表配置文件 {os.path.basename(config_path)} 格式错误。')
         except Exception as e:
-            self.logger.error(f'加载下载列表失败: {e}', exc_info=True) # 添加 exc_info=True 获取更详细的堆栈跟踪
+            self.logger.error(f'加载下载列表失败: {e}', exc_info=True)
             QMessageBox.critical(self, '错误', f'加载下载列表时发生未知错误: {e}')
 
     def update_thread_count(self, value):
@@ -360,11 +359,11 @@ class DownloadTab(QWidget):
             QMessageBox.warning(self, '错误', '无法获取选中项目的下载信息。')
             return
 
-        url = selected_item_data.get('download_url') # 修改: 使用 download_url
+        url = selected_item_data.get('download_url')
         target_filename = selected_item_data.get('target_filename')
         target_location = selected_item_data.get('target_location')
         # is_zipped 在 download_finished 中根据 item_data 获取
-        item_title = selected_item_data.get('title', '未知项目') # 修改: 使用 title, 并提供默认值
+        item_title = selected_item_data.get('title', '未知项目')
 
         if not url or not target_filename or not target_location:
             QMessageBox.warning(self, '错误', f'项目 "{item_title}" 的下载信息不完整 (需要 download_url, target_filename, target_location)。')
@@ -380,13 +379,13 @@ class DownloadTab(QWidget):
         self.current_instance = None # 重置当前实例
         if target_location.startswith('Servers/{instance_name}'):
             # 使用项目标题作为对话框的提示信息
-            category_for_dialog = item_title # 修改: 使用 item_title
+            category_for_dialog = item_title
             dialog = InstanceSelectionDialog(category_for_dialog, self)
             if dialog.exec_() == QDialog.Accepted:
                 current_item = dialog.list_widget.currentItem()
                 if current_item:
                     self.current_instance = current_item.text()
-                    self.logger.info(f'为 {item_title} 选择了实例: {self.current_instance}') # 修改: 使用 item_title
+                    self.logger.info(f'为 {item_title} 选择了实例: {self.current_instance}')
                 else:
                     QMessageBox.warning(self, '提示', '未选择实例，下载取消。')
                     return                    
@@ -423,7 +422,7 @@ class DownloadTab(QWidget):
         actual_save_file_path = os.path.join(temp_save_path, target_filename)
 
         # 检查是否已有相同任务在下载
-        for thread, (item_title_in_queue, _) in self.download_queue.items(): # 修改变量名以更清晰
+        for thread, (item_title_in_queue, _) in self.download_queue.items():
             if item_title_in_queue == selected_item_data['title'] and thread.isRunning():
                 QMessageBox.information(self, '提示', f'{selected_item_data["title"]} 已在下载队列中。')
                 return
@@ -440,11 +439,9 @@ class DownloadTab(QWidget):
         thread.start()
 
     def update_progress(self, value):
-        total = sum(t.isRunning() for t in self.download_queue.keys()) # Iterate over keys for threads
+        total = sum(t.isRunning() for t in self.download_queue.keys())
         if total > 0:
             current_progress = self.progress_bar.value()
-            # A more robust way to average progress if multiple downloads are simultaneous
-            # This simple approach just updates with the latest signal, assuming one main download at a time for the bar
             self.progress_bar.setValue(value)
         else:
             self.progress_bar.reset()
@@ -457,10 +454,6 @@ class DownloadTab(QWidget):
             self.progress_bar.reset()
             # 尝试移除下载队列中的线程
             finished_thread = None
-            # 查找发送错误信号的线程。这部分逻辑比较复杂，因为错误信息不直接包含线程标识。
-            # 一个简单的方法是，假设DownloadThread在出错时也发送其save_path或一个特殊标记。
-            # 当前实现中，DownloadThread的finished_signal在出错时发送 'Error: ...'
-            # 我们需要找到一个非运行的线程并假设它是出错的那个，或者改进信号传递。
             for thread, (item_name, path) in list(self.download_queue.items()): # 使用list迭代以允许修改
                 if not thread.isRunning(): # 找到第一个非运行线程
                     # 无法直接通过msg（如 'Error:权限不足'）关联到特定path
@@ -499,7 +492,6 @@ class DownloadTab(QWidget):
         
         if item_name_for_tree_lookup:
             # 通过 item_name_for_tree_lookup (即 selected_item_data['name']) 在树中找到对应的 QTreeWidgetItem
-            # 注意：如果树中项目名不唯一，这里可能需要更精确的匹配
             items = self.tree.findItems(item_name_for_tree_lookup, Qt.MatchExactly | Qt.MatchRecursive, 0)
             if items:
                 item_data = items[0].data(0, Qt.UserRole)

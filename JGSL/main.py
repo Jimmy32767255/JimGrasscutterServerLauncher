@@ -2,7 +2,7 @@ import sys
 import os
 import json
 from loguru import logger
-from PyQt5.QtWidgets import QApplication, QPushButton, QMessageBox # 添加 QMessageBox 
+from PyQt5.QtWidgets import QApplication, QMessageBox  QMessageBox 
 from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtCore import Qt
 from main_window import MainWindow

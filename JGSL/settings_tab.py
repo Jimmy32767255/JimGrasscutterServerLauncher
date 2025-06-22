@@ -1,13 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QCheckBox, QComboBox, QLabel, QPushButton, QSpinBox, QHBoxLayout,QSpacerItem,QSizePolicy
-from PyQt5.QtCore import QTimer, QThread, pyqtSignal
-import qdarkstyle
 from loguru import logger
-from blur_style import BLUR_STYLE # 导入自定义样式
+from blur_style import BLUR_STYLE
 import json
 import os
-# 导入更新检查器和设置当前版本号的函数
 from update_checker import UpdateCheckThread, VERSION
-# 导入监控面板
 from monitor_tab import MonitorPanel
 
 CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
@@ -19,7 +15,7 @@ class SettingsTab(QWidget):
         # 主题设置
         self.theme_label = QLabel("界面主题:")
         self.theme_combo = QComboBox()
-        self.theme_combo.addItems(['现代深色', 'Windows原生'])
+        self.theme_combo.addItems(['面子工程', 'Windows原生', '现代深色'])
         
         # 语言设置
         self.lang_label = QLabel("显示语言(实现中):")
@@ -75,7 +71,7 @@ class SettingsTab(QWidget):
         try:
             if not os.path.exists(CONFIG_FILE):
                 logger.warning(f'配置文件 {CONFIG_FILE} 不存在，将使用默认设置')
-                theme = 'dark'
+                theme = 'fe'
                 lang = 'zh_CN'
                 auto_update = True
                 max_log_lines = 100
@@ -83,7 +79,7 @@ class SettingsTab(QWidget):
                 with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
                     config_data = json.load(f)
                 
-                theme = config_data.get('Theme', 'dark')
+                theme = config_data.get('Theme', 'fe')
                 logger.debug(f'加载主题设置 {theme}')
                 lang = config_data.get('Language', 'zh_CN')
                 auto_update = config_data.get('AutoUpdate', True)
@@ -92,13 +88,13 @@ class SettingsTab(QWidget):
 
         except (FileNotFoundError, json.JSONDecodeError, Exception) as e:
             logger.error(f'加载设置时出错: {e}，将使用默认设置')
-            theme = 'dark'
+            theme = 'fe'
             lang = 'zh_CN'
             auto_update = True
             max_log_lines = 100
             self.max_log_spin.setValue(max_log_lines)
 
-        self.theme_combo.setCurrentText('现代深色' if theme == 'dark' else 'Windows原生')
+        self.theme_combo.setCurrentText('面子工程' if theme == 'fe' else 'Windows原生')
         self.lang_combo.setCurrentText('简体中文' if lang == 'zh_CN' else 'English')
         self.auto_update.setChecked(auto_update)
         self._apply_theme(theme)
@@ -108,7 +104,7 @@ class SettingsTab(QWidget):
             self.run_update_check()
 
     def save_settings(self):
-        theme = 'dark' if self.theme_combo.currentText() == '现代深色' else 'light'
+        theme = 'fe' if self.theme_combo.currentText() == '面子工程' else 'light'
         lang = 'zh_CN' if self.lang_combo.currentText() == '简体中文' else 'en_US'
         auto_update = self.auto_update.isChecked()
         max_log_lines = self.max_log_spin.value()
@@ -145,7 +141,7 @@ class SettingsTab(QWidget):
     def _apply_theme(self, theme):
         """Helper function to apply theme."""
         try:
-            if theme == 'dark':
+            if theme == 'fe':
                 self.window().setStyleSheet(BLUR_STYLE) # 应用自定义的粉紫渐变主题
             else:
                 self.window().setStyleSheet('')

@@ -1,10 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QFileDialog, QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog, QFormLayout, QDialogButtonBox
-from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QObject, pyqtProperty, QEasingCurve, QThread, pyqtSignal, QProcess
-from PyQt5.QtGui import QPainter, QColor, QFont, QFontMetrics, QPen, QLinearGradient, QTextCursor
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog
+from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, pyqtProperty, QEasingCurve, QThread, pyqtSignal, QProcess
+from PyQt5.QtGui import QPainter, QColor, QFont, QPen, QTextCursor
 import psutil
 import os
 import json
-import sys
 import time
 import datetime
 import threading
@@ -89,7 +88,6 @@ class CircleProgress(QWidget):
 
 
 class MonitorPanel(QDialog):
-    # 添加 process 参数，类型为 QProcess 或 None
     instance_closed_signal = pyqtSignal(str) # 实例关闭信号，参数为 instance_name
     process_disappeared_signal = pyqtSignal(str) # 进程消失信号，参数为 instance_name
 
@@ -127,7 +125,7 @@ class MonitorPanel(QDialog):
             self.mem_usage = CircleProgress()
             self.cpu_label = QLabel("CPU")
             self.mem_label = QLabel("MEM")
-            self.uptime_label = QLabel("UpTime: 00h00m00s") # 添加运行时间标签
+            self.uptime_label = QLabel("UpTime: 00h00m00s")
             self.log_text = QTextEdit()
             self.command_input = QLineEdit()
             self.command_button = QPushButton('发送')
@@ -170,7 +168,7 @@ class MonitorPanel(QDialog):
             self.current_log = ""
             self.last_log_size = 0
             self.command_history = []
-            self._is_closing = False # 添加一个标志来防止重复关闭操作
+            self._is_closing = False
 
             # 调试模式下不需要计算启动时间或读取真实日志
             if not self.debug_mode:

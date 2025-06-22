@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QMainWindow, QTabWidget, QWidget, QVBoxLayout, QApplication, QDesktopWidget
-from PyQt5.QtCore import Qt, QEvent, QProcess
+from PyQt5.QtWidgets import QMainWindow, QTabWidget, QWidget, QVBoxLayout, QApplication
+from PyQt5.QtCore import Qt, QProcess
 from PyQt5.QtGui import QIcon
-import qdarkstyle
 from launch_tab import LaunchTab
 from monitor_tab import MonitorTab
 from manage_tab import ManageTab
@@ -12,6 +11,8 @@ from database_tab import DatabaseTab
 from about_tab import AboutTab
 from background_effect import BackgroundEffect
 from loguru import logger
+from custom_title_bar import CustomTitleBar
+from blur_style import apply_blur_style
 
 
 class MainWindow(QMainWindow):
@@ -37,7 +38,6 @@ class MainWindow(QMainWindow):
         self.running_processes: dict[int, QProcess] = {}
 
         # 创建自定义标题栏
-        from custom_title_bar import CustomTitleBar
         self.title_bar = CustomTitleBar(self)
         
         # 创建选项卡
@@ -87,7 +87,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # 应用高斯模糊透明样式
-        from blur_style import apply_blur_style
         apply_blur_style(self)
         
         # 应用背景模糊效果

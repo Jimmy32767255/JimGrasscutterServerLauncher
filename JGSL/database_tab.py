@@ -10,6 +10,8 @@ import zipfile
 import datetime
 import psutil
 import time
+import sys
+from PyQt5.QtWidgets import QApplication
 
 class DatabaseTab(QWidget):
     def __init__(self, parent=None):
@@ -279,8 +281,6 @@ class DatabaseTab(QWidget):
 
 if __name__ == '__main__':
     # 这个部分是用于独立测试这个模块的
-    import sys
-    from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
     main_window = QWidget()
     main_layout = QVBoxLayout(main_window)

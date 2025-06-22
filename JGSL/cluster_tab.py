@@ -1,16 +1,13 @@
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
-    QListWidget, QTabWidget, QCheckBox, QLineEdit, QListWidgetItem, QFormLayout,
+    QListWidget, QTabWidget, QCheckBox, QLineEdit, QListWidgetItem, 
     QMessageBox, QSizePolicy
 )
-from PyQt5.QtCore import Qt
 from PyQt5 import QtCore
 import os
 import json
-from pathlib import Path
-import asyncio
-import re
 from loguru import logger
+import re
 
 class ClusterConfigDialog(QDialog):
     def __init__(self, parent=None):
@@ -290,7 +287,6 @@ class ClusterConfigDialog(QDialog):
         Args:
             state: 复选框状态
         """
-        from dispatch import DispatchServer
         
         enable_external = (state != QtCore.Qt.Checked)
         self.dispatch_server_list.setEnabled(enable_external)
@@ -334,7 +330,6 @@ class ClusterConfigDialog(QDialog):
             return
             
         # 集群名称验证:只能包含字母、数字、下划线和中文
-        import re
         if not re.match(r'^[\w\u4e00-\u9fa5]+$', cluster_name):
             QMessageBox.warning(self, "错误", "集群名称只能包含字母、数字、下划线和中文")
             self.config_tabs.setCurrentIndex(2)
@@ -363,7 +358,6 @@ class ClusterConfigDialog(QDialog):
             "dispatch_servers": dispatch_servers,
             "use_internal_dispatch": use_internal,
             "game_servers": game_servers,
-            # TODO: 添加其他需要的配置项
         }
         print(f"准备保存的集群配置: {cluster_config}")
 
@@ -672,7 +666,6 @@ class ClusterTab(QWidget):
         except Exception as e:
             logger.error(f"更新服务器 {server_name} 角色配置出错: {e}")
             # 可以选择性地通知用户
-            # QMessageBox.warning(self, "警告", f"更新服务器 {server_name} 配置失败:{e}")
 
     def _get_cluster_config(self, cluster_name):
         """根据名称获取单个集群的配置"""

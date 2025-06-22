@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QInputDialog, QDialog, QFormLayout, QLineEdit, QFileDialog, QMessageBox, QProgressDialog, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QInputDialog, QDialog, QFormLayout, QLineEdit, QFileDialog, QMessageBox, QProgressDialog
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 import os, json
 from pathlib import Path

@@ -4,11 +4,9 @@ import websockets
 import json
 import base64
 import os
-from typing import Optional, Dict, List, Callable, Any, Union
+from typing import Optional, Dict, List, Callable, Any
 from enum import IntEnum
-import hashlib
 from aiohttp import web
-import aiohttp
 import uuid
 
 class PacketIds(IntEnum):
@@ -140,7 +138,6 @@ class DispatchServer:
         # 创建响应对象
         response = {"retcode": 0, "records": []}
         
-        # TODO: 从数据库获取抽卡记录
         
         # 发送响应
         await self.send_message(client_id, PacketIds.GachaHistoryRsp, response)
@@ -155,7 +152,6 @@ class DispatchServer:
         """
         account_id = message.get("accountId")
         
-        # TODO: 从数据库获取账号信息
         account = {"id": account_id, "username": f"user_{account_id}", "token": ""}
         
         # 发送响应
@@ -172,7 +168,6 @@ class DispatchServer:
         player_id = message.get("playerId")
         fields = message.get("fields", [])
         
-        # TODO: 从数据库获取玩家字段
         player_data = {"playerId": player_id}
         for field in fields:
             player_data[field] = f"value_of_{field}"
@@ -191,7 +186,6 @@ class DispatchServer:
         account_id = message.get("accountId")
         fields = message.get("fields", [])
         
-        # TODO: 从数据库获取玩家信息
         player_data = {"accountId": account_id, "playerId": 10001}
         for field in fields:
             player_data[field] = f"value_of_{field}"
@@ -318,7 +312,6 @@ class HttpServer:
         """处理登录请求"""
         try:
             body = await request.json()
-            # TODO: 实现实际的登录逻辑
             response = {
                 "retcode": 0,
                 "message": "OK",
@@ -360,7 +353,6 @@ class HttpServer:
         """处理令牌登录请求"""
         try:
             body = await request.json()
-            # TODO: 实现实际的令牌验证逻辑
             response = {
                 "retcode": 0,
                 "message": "OK",
@@ -397,7 +389,6 @@ class HttpServer:
         """处理会话密钥登录请求"""
         try:
             body = await request.json()
-            # TODO: 实现实际的会话密钥验证逻辑
             response = {
                 "retcode": 0,
                 "message": "OK",

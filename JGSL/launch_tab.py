@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox
-from PyQt5.QtCore import QProcess, QTimer, QCoreApplication, pyqtSignal # 保持 pyqtSignal
-import os, json, time, locale, sys
+from PyQt5.QtCore import QProcess, QTimer, pyqtSignal # 保持 pyqtSignal
+import os, json, time, locale
 from pathlib import Path
 from loguru import logger
 import psutil

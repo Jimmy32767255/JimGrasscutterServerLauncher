@@ -1,5 +1,4 @@
 import requests
-import json
 from loguru import logger
 from PyQt5.QtCore import QThread, pyqtSignal
 

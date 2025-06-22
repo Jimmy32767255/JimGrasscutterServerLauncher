@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QDialog, QTabWidget, QWidget, QVBoxLayout, QFormLayout, QLineEdit, QCheckBox, QPushButton, QTableWidget, QTableWidgetItem, QMessageBox, QHBoxLayout, QComboBox, QSpinBox, QGroupBox, QTextEdit, QFileDialog, QScrollArea, QHeaderView
 from PyQt5.QtCore import Qt
 import json
-from pathlib import Path
 from loguru import logger
 
 
