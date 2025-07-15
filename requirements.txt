@@ -5,5 +5,5 @@ requests==2.32.4
 websockets==12.0
 psutil
 pymongo
-aiohttp==3.11.0b0
+aiohttp==3.12.14
 patool
