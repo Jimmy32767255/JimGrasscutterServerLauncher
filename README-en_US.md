@@ -1,8 +1,8 @@
 # Jim Grasscutter Server Launcher
 
-[中文](.\README.md)
+[中文](README.md)
 
-![JGSL Logo](.\Assets\JGSL-Logo.ico)
+![JGSL Logo](/Assets/JGSL-Logo.ico)
 
 [Introduction Video](https://www.bilibili.com/video/BV1C2EkzoEqd)
 
@@ -32,9 +32,11 @@
   
 - [Code of Conduct](.\CODE_OF_CONDUCT.md)
 
+- [Development Documentation](DevDoc-en_US.md)
+
 ## How to use it?
 
-#### We recommend regular users download the packaged version from [Releases](https://github.com/Jimmy32767255/JimGrasscutterServerLauncher/releases) which requires no dependency installation - just unzip and run.
+We recommend regular users download the packaged version from [Releases](https://github.com/Jimmy32767255/JimGrasscutterServerLauncher/releases) which requires no dependency installation - just unzip and run.
 
 ###### Note: Packaged versions in Releases may not be the latest!
 
@@ -77,3 +79,5 @@ After completion, find the output in the .\dist folder
 1. Opening the monitoring panel may cause the server log to generate millions of EOF lines. This issue originates from line 341 of Grasscutter.java and occurs sporadically with unknown causes. If encountered, please disable the console (game.enableConsole) in the configuration file and use opencommand instead.
 
 2. First-time runs may experience unusually high lag despite low resource usage. The cause is unknown, but multiple restarts or prolonged usage may resolve the issue.
+
+3. [FE-Core](https://github.com/Jimmy32767255/FE-Core) Gaussian blur effect fails on Windows 11 Insider Preview Canary. This is a Microsoft issue that I cannot fix. This issue does not exist on the official version of Windows 11.

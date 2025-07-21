@@ -32,6 +32,8 @@
   
 - [行为准则](CODE_OF_CONDUCT.md)
 
+- [开发文档](DevDoc.md)
+
 ## 如何使用？
 
 我们建议普通用户直接下载[Releases](https://github.com/Jimmy32767255/JimGrasscutterServerLauncher/releases)中的打包版本，无需安装依赖，解压缩后即可直接运行。
