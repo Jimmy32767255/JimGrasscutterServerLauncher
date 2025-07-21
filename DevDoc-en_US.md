@@ -1,6 +1,6 @@
 # Developer Notes:
 ## How to create a theme?
-Create a new folder in the [Themes folder](Translations), the folder name will be the theme name.
+Create a new folder in the [Themes folder](Themes), the folder name will be the theme name.
 The theme folder must contain a `theme.json` file to describe the theme's information.
 The content of the `theme.json` file is as follows:
 ```json
