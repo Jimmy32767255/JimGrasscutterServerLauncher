@@ -19,8 +19,7 @@ class LaunchTab(QWidget):
         super().__init__()
         self.setStyleSheet("background-color: rgba(255, 255, 255, 0.01);")  # 设置背景透明
         self.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.current_process = None
-        self.current_instance = None
+        self.running_instances = {} # 存储所有正在运行的实例 {instance_name: {'process': QProcess, 'pid': int, 'instance_dir': Path}}
         self.db_process = QProcess()
         self.instance_counter = 0
         self.db_heartbeat_timer = QTimer()
@@ -28,7 +27,7 @@ class LaunchTab(QWidget):
         self.db_heartbeat_timer.timeout.connect(self.check_db_health)
 
         self.server_list = QListWidget()
-        self.start_btn = QPushButton(self.tr('启动服务器'))
+        self.start_btn = QPushButton(self.tr('启动选定的实例'))
 
         layout = QVBoxLayout()
         layout.addWidget(self.server_list)
@@ -140,13 +139,19 @@ class LaunchTab(QWidget):
             else:
                 logger.warning(self.tr('由于端口配置缺失，跳过端口可用性检查。'))
 
-            if self.instance_counter == 0:
+            # 检查是否已经有实例在运行，如果没有，则启动数据库服务
+            if not self.running_instances:
                 self.start_database_service()
                 self.db_heartbeat_timer.start()
 
+            # 检查当前实例是否已经在运行
+            if instance_name in self.running_instances:
+                logger.warning(self.tr(f'实例 {instance_name} 已经在运行中，无法重复启动。'))
+                QMessageBox.warning(self, self.tr('重复启动'), self.tr(f'实例 {instance_name} 已经在运行中。'), QMessageBox.Ok)
+                return
+
             self.instance_counter += 1
-            self.current_instance = instance_dir
-            self.start_btn.setEnabled(False)
+            # 启动按钮不再禁用，允许同时启动多个实例
             # 检查Java路径和Grasscutter路径是否有效
             if not java_path or not grasscutter_path:
                 logger.error(self.tr(f'Java路径或Grasscutter路径无效: java_path={java_path}, grasscutter_path={grasscutter_path}'))
@@ -155,30 +160,30 @@ class LaunchTab(QWidget):
                 self.instance_counter -= 1
                 return
                 
-            self.current_process = QProcess(self)
-            self.current_process.setWorkingDirectory(str(instance_dir))
-            self.current_process.setProgram(java_path)
-            self.current_process.setArguments([*(str(arg) for arg in jvm_pre_args), '-jar', str(grasscutter_path), *(str(arg) for arg in jvm_post_args)])
-            self.current_process.errorOccurred.connect(self.on_process_error)
-            self.current_process.finished.connect(self.on_process_finished)
-            self.current_process.readyReadStandardOutput.connect(self.handle_stdout)
-            self.current_process.readyReadStandardError.connect(self.handle_stderr)
+            process = QProcess(self)
+            process.setWorkingDirectory(str(instance_dir))
+            process.setProgram(java_path)
+            process.setArguments([*(str(arg) for arg in jvm_pre_args), '-jar', str(grasscutter_path), *(str(arg) for arg in jvm_post_args)])
+            process.errorOccurred.connect(lambda error, p=process, inst_name=instance_name, inst_dir=instance_dir: self.on_process_error(error, p, inst_name, inst_dir))
+            process.finished.connect(lambda exitCode, exitStatus, p=process, inst_name=instance_name, inst_dir=instance_dir: self.on_process_finished(exitCode, exitStatus, p, inst_name, inst_dir))
+            process.readyReadStandardOutput.connect(lambda p=process: self.handle_stdout(p))
+            process.readyReadStandardError.connect(lambda p=process: self.handle_stderr(p))
             logger.debug(self.tr(f'执行命令: {java_path} {" ".join([*jvm_pre_args, "-jar", str(grasscutter_path), *jvm_post_args])}'))
             try:
-                self.current_process.start()
-                if not self.current_process.waitForStarted(3000):  # 等待最多3秒
-                    logger.error(f'进程启动超时: {self.current_process.errorString()}')
-                    QMessageBox.critical(self, '启动失败', f'进程启动超时\n错误信息: {self.current_process.errorString()}', QMessageBox.Ok)
-                    self.current_process = None
-                    self.start_btn.setEnabled(True)
+                process.start()
+                if not process.waitForStarted(3000):  # 等待最多3秒
+                    logger.error(f'进程启动超时: {process.errorString()}')
+                    QMessageBox.critical(self, '启动失败', f'进程启动超时\n错误信息: {process.errorString()}', QMessageBox.Ok)
                     self.instance_counter -= 1
                     return
                     
                 # 进程成功启动后的处理
-                if self.current_process and self.current_process.state() == QProcess.Running:
-                    pid = self.current_process.processId()
+                if process and process.state() == QProcess.Running:
+                    pid = process.processId()
+                    # 将新启动的实例添加到字典中
+                    self.running_instances[instance_name] = {'process': process, 'pid': pid, 'instance_dir': instance_dir}
                     # 发射 process_created 信号
-                    self.process_created.emit(pid, self.current_process)
+                    self.process_created.emit(pid, process)
                     lock_file = instance_dir / 'Running.lock'
                     logger.debug(self.tr(f'创建锁文件: {lock_file} PID={pid}'))
                     try:
@@ -200,19 +205,15 @@ class LaunchTab(QWidget):
                 logger.info(self.tr(f'启动实例 {instance_name}'))
             except Exception as e:
                 logger.error(self.tr(f'启动进程时发生错误: {e}'))
-                if self.current_process:
-                    logger.error(self.tr(f'进程启动错误: {self.current_process.errorString()}'))
-                self.current_process = None
-                self.start_btn.setEnabled(True)
+                if process:
+                    logger.error(self.tr(f'进程启动错误: {process.errorString()}'))
                 self.instance_counter -= 1
                 return
         except Exception as e:
             logger.error(self.tr(f'启动实例 {instance_name} 时发生错误: {e}'))
             logger.error(self.tr(f'读取配置文件失败或启动进程时发生错误: {e}'))
-            if self.current_process:
-                logger.error(self.tr(f'进程启动错误: {self.current_process.errorString()}'))
-            self.current_process = None
-            self.start_btn.setEnabled(True)
+            if process:
+                logger.error(self.tr(f'进程启动错误: {process.errorString()}'))
             self.instance_counter -= 1
             self.remove_lock_file(instance_dir)
             return
@@ -275,18 +276,17 @@ class LaunchTab(QWidget):
         if lock_file.exists():
             lock_file.unlink()
 
-    def on_process_finished(self):
-        if self.current_instance:
-            pid = self.current_process.processId() if self.current_process else None
-            self.remove_lock_file(self.current_instance)
-            self.instance_stopped.emit(self.current_instance.name)
-            logger.info(f'实例 {self.current_instance.name} 已停止')
-            # 发射 process_finished_signal 信号
-            if pid:
-                self.process_finished_signal.emit(pid)
-            self.start_btn.setEnabled(True)
-            self.current_instance = None
-            self.current_process = None # 清理 QProcess 引用
+    def on_process_finished(self, exitCode, exitStatus, process: QProcess, instance_name: str, instance_dir: Path):
+        pid = process.processId() if process else None
+        self.remove_lock_file(instance_dir)
+        self.instance_stopped.emit(instance_name)
+        logger.info(f'实例 {instance_name} 已停止')
+        # 从运行实例字典中移除
+        if instance_name in self.running_instances:
+            del self.running_instances[instance_name]
+        # 发射 process_finished_signal 信号
+        if pid:
+            self.process_finished_signal.emit(pid)
         self.instance_counter -= 1
         if self.instance_counter == 0:
             self.db_process.terminate()
@@ -295,17 +295,16 @@ class LaunchTab(QWidget):
             self.db_heartbeat_timer.stop()
             logger.info(f'数据库已停止')
 
-    def on_process_error(self, error):
-        if self.current_instance:
-            pid = self.current_process.processId() if self.current_process else None
-            logger.error(f'实例 {self.current_instance.name} 启动失败: {self.current_process.errorString()}')
-            self.remove_lock_file(self.current_instance)
-            # 发射 process_finished_signal 信号
-            if pid:
-                self.process_finished_signal.emit(pid)
-            self.start_btn.setEnabled(True)
-            self.current_instance = None
-            self.current_process = None # 清理 QProcess 引用
+    def on_process_error(self, error, process: QProcess, instance_name: str, instance_dir: Path):
+        pid = process.processId() if process else None
+        logger.error(f'实例 {instance_name} 启动失败: {process.errorString()}')
+        self.remove_lock_file(instance_dir)
+        # 从运行实例字典中移除
+        if instance_name in self.running_instances:
+            del self.running_instances[instance_name]
+        # 发射 process_finished_signal 信号
+        if pid:
+            self.process_finished_signal.emit(pid)
         self.instance_counter -= 1
         if self.instance_counter == 0:
             self.db_process.terminate()
@@ -314,15 +313,15 @@ class LaunchTab(QWidget):
             self.db_heartbeat_timer.stop()
             logger.info(f'数据库已停止')
 
-    def handle_stdout(self):
-        text = self.current_process.readAllStandardOutput().data().decode(locale.getpreferredencoding(False), errors='replace')
+    def handle_stdout(self, process: QProcess):
+        text = process.readAllStandardOutput().data().decode(locale.getpreferredencoding(False), errors='replace')
         logger.trace(f'进程输出: {text.strip()}')
 
-    def handle_stderr(self):
-        text = self.current_process.readAllStandardError().data().decode(locale.getpreferredencoding(False), errors='replace')
-        if self.current_process.state() != QProcess.Running:
+    def handle_stderr(self, process: QProcess):
+        text = process.readAllStandardError().data().decode(locale.getpreferredencoding(False), errors='replace')
+        if process.state() != QProcess.Running:
             logger.error(f'进程错误: {text.strip()}')
-        elif self.db_process.state() != QProcess.Running:
+        elif self.db_process.state() != QProcess.Running and process == self.db_process:
             if 'waiting for connections on port' in text:
                 logger.info(f'数据库已成功启动')
             else:
@@ -338,16 +337,22 @@ class LaunchTab(QWidget):
 
     def cleanup(self):
         # 终止所有运行中的实例进程
-        if self.current_process and self.current_process.state() == QProcess.Running:
-            pid = self.current_process.processId()
-            self.current_process.terminate()
-            self.current_process.waitForFinished(3000)
-            if self.current_process.state() == QProcess.Running:
-                self.current_process.kill()
-                self.current_process.waitForFinished() # 等待 kill 完成
-            # 发射 process_finished_signal 信号
-            if pid:
-                self.process_finished_signal.emit(pid)
+        for instance_name, instance_data in list(self.running_instances.items()):
+            process = instance_data['process']
+            pid = instance_data['pid']
+            instance_dir = instance_data['instance_dir']
+            if process and process.state() == QProcess.Running:
+                logger.info(f'正在终止实例 {instance_name} (PID: {pid})')
+                process.terminate()
+                process.waitForFinished(3000)
+                if process.state() == QProcess.Running:
+                    process.kill()
+                    process.waitForFinished() # 等待 kill 完成
+                # 发射 process_finished_signal 信号
+                if pid:
+                    self.process_finished_signal.emit(pid)
+                self.remove_lock_file(instance_dir)
+                del self.running_instances[instance_name]
         # 终止数据库进程
         if self.db_process.state() == QProcess.Running:
             self.db_process.terminate()

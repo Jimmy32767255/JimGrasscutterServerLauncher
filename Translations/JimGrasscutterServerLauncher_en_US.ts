@@ -227,7 +227,7 @@
     <message>
         <location filename="../Src/cluster_tab.py" line="255"/>
         <source>此服务器当前角色为 {role}，可能已属于其他集群。加入新集群将覆盖其配置。</source>
-        <translation>This server's current role is {role}, it may already belong to another cluster. Joining a new cluster will overwrite its configuration.</translation>
+        <translation>This server&apos;s current role is {role}, it may already belong to another cluster. Joining a new cluster will overwrite its configuration.</translation>
     </message>
     <message>
         <location filename="../Src/cluster_tab.py" line="258"/>
@@ -276,7 +276,7 @@
     <message>
         <location filename="../Src/cluster_tab.py" line="344"/>
         <source>请指定一个调度服务器，或勾选&quot;使用内置调度&quot;</source>
-        <translation>Please specify a dispatch server, or check "Use built-in dispatch"</translation>
+        <translation>Please specify a dispatch server, or check &quot;Use built-in dispatch&quot;</translation>
     </message>
     <message>
         <location filename="../Src/cluster_tab.py" line="371"/>
@@ -943,42 +943,42 @@ Please manually ensure MongoDB service is stopped before continuing.</translatio
 <context>
     <name>LaunchTab</name>
     <message>
-        <location filename="../Src/launch_tab.py" line="31"/>
-        <source>启动服务器</source>
-        <translation>Start Server</translation>
+        <location filename="../Src/launch_tab.py" line="30"/>
+        <source>启动选定的实例</source>
+        <translation>Start Selected Instance</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="44"/>
+        <location filename="../Src/launch_tab.py" line="43"/>
         <source>当前项目根目录: {self.root_dir}</source>
         <translation>Current Project Root: {self.root_dir}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="54"/>
+        <location filename="../Src/launch_tab.py" line="53"/>
         <source>请选择一个服务器实例</source>
         <translation>Please select a server instance</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="67"/>
+        <location filename="../Src/launch_tab.py" line="66"/>
         <source>实例 {instance_name} 正在运行中，无法启动</source>
         <translation>Instance {instance_name} is already running</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="70"/>
+        <location filename="../Src/launch_tab.py" line="69"/>
         <source>检测到残留的锁文件，尝试移除</source>
         <translation>Detected leftover lock file, attempting to remove</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="73"/>
+        <location filename="../Src/launch_tab.py" line="72"/>
         <source>锁文件读取失败，尝试移除</source>
         <translation>Failed to read lock file, attempting to remove</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="76"/>
+        <location filename="../Src/launch_tab.py" line="75"/>
         <source>锁文件已不存在</source>
         <translation>Lock file no longer exists</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="78"/>
+        <location filename="../Src/launch_tab.py" line="77"/>
         <source>检查锁文件时发生错误: {e}</source>
         <translation>Error checking lock file: {e}</translation>
     </message>
@@ -991,17 +991,17 @@ Please manually ensure MongoDB service is stopped before continuing.</translatio
         <translation type="vanished">Failed to read config file: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="135"/>
+        <location filename="../Src/launch_tab.py" line="134"/>
         <source>端口 {port}/{proto} 被进程占用: {info}</source>
         <translation>Port {port}/{proto} is occupied by process: {info}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="136"/>
+        <location filename="../Src/launch_tab.py" line="135"/>
         <source>端口冲突</source>
         <translation>Port Conflict</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="136"/>
+        <location filename="../Src/launch_tab.py" line="135"/>
         <source>端口 {port}/{proto} 被进程占用
 进程ID: {info[&quot;pid&quot;]}
 进程名称: {info[&quot;process_name&quot;]}</source>
@@ -1010,23 +1010,23 @@ Process ID: {info[&quot;pid&quot;]}
 Process Name: {info[&quot;process_name&quot;]}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="139"/>
+        <location filename="../Src/launch_tab.py" line="138"/>
         <source>所有必要端口可用</source>
         <translation>All required ports are available</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="152"/>
+        <location filename="../Src/launch_tab.py" line="157"/>
         <source>Java路径或Grasscutter路径无效: java_path={java_path}, grasscutter_path={grasscutter_path}</source>
         <translation>Invalid Java or Grasscutter path: java_path={java_path}, grasscutter_path={grasscutter_path}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="95"/>
-        <location filename="../Src/launch_tab.py" line="153"/>
+        <location filename="../Src/launch_tab.py" line="94"/>
+        <location filename="../Src/launch_tab.py" line="158"/>
         <source>启动失败</source>
         <translation>Startup Failed</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="153"/>
+        <location filename="../Src/launch_tab.py" line="158"/>
         <source>Java路径或Grasscutter路径无效
 Java路径: {java_path}
 Grasscutter路径: {grasscutter_path}</source>
@@ -1039,104 +1039,123 @@ Grasscutter Path: {grasscutter_path}</translation>
         <translation type="vanished">Executing command: {java_path} {&quot; &quot;.join([*jvm_pre_args, &quot;-jar&quot;, grasscutter_path, *jvm_post_args])}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="183"/>
+        <location filename="../Src/launch_tab.py" line="188"/>
         <source>创建锁文件: {lock_file} PID={pid}</source>
         <translation>Creating lock file: {lock_file} PID={pid}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="192"/>
+        <location filename="../Src/launch_tab.py" line="197"/>
         <source>成功写入锁文件 PID={pid}</source>
         <translation>Successfully wrote lock file PID={pid}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="194"/>
+        <location filename="../Src/launch_tab.py" line="199"/>
         <source>进程验证成功: PID={pid}</source>
         <translation>Process verification successful: PID={pid}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="196"/>
+        <location filename="../Src/launch_tab.py" line="201"/>
         <source>进程验证失败: PID={pid}</source>
         <translation>Process verification failed: PID={pid}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="198"/>
+        <location filename="../Src/launch_tab.py" line="203"/>
         <source>写入锁文件失败: {e}</source>
         <translation>Failed to write lock file: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="202"/>
+        <location filename="../Src/launch_tab.py" line="207"/>
         <source>启动进程时发生错误: {e}</source>
         <translation>Error starting process: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="204"/>
-        <location filename="../Src/launch_tab.py" line="213"/>
         <source>进程启动错误: {self.current_process.errorString()}</source>
-        <translation>Process startup error: {self.current_process.errorString()}</translation>
+        <translation type="vanished">Process startup error: {self.current_process.errorString()}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="200"/>
+        <location filename="../Src/launch_tab.py" line="205"/>
         <source>启动实例 {instance_name}</source>
         <translation>Starting instance {instance_name}</translation>
     </message>
     <message>
+        <location filename="../Src/launch_tab.py" line="93"/>
         <location filename="../Src/launch_tab.py" line="94"/>
-        <location filename="../Src/launch_tab.py" line="95"/>
         <source>Grasscutter JAR 文件不存在: {grasscutter_path}</source>
         <translation>Grasscutter JAR file does not exist: {grasscutter_path}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="116"/>
+        <location filename="../Src/launch_tab.py" line="115"/>
         <source>Grasscutter配置文件缺少端口配置，将尝试使用默认端口或跳过端口检查。</source>
         <translation>Grasscutter configuration file missing port configuration, will attempt to use default ports or skip port check.</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="118"/>
+        <location filename="../Src/launch_tab.py" line="117"/>
         <source>读取Grasscutter配置文件失败: {e}，将尝试在无配置状态下启动。</source>
         <translation>Failed to read Grasscutter configuration file: {e}, will attempt to start without configuration.</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="120"/>
+        <location filename="../Src/launch_tab.py" line="119"/>
         <source>Grasscutter配置文件 {config_path} 不存在，将尝试在无配置状态下启动。</source>
         <translation>Grasscutter configuration file {config_path} does not exist, will attempt to start without configuration.</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="125"/>
+        <location filename="../Src/launch_tab.py" line="124"/>
         <source>未找到Dispatch端口配置，使用默认值: {dispatch_port}</source>
         <translation>Dispatch port configuration not found, using default: {dispatch_port}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="128"/>
+        <location filename="../Src/launch_tab.py" line="127"/>
         <source>未找到Game端口配置，使用默认值: {game_port}</source>
         <translation>Game port configuration not found, using default: {game_port}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="141"/>
+        <location filename="../Src/launch_tab.py" line="140"/>
         <source>由于端口配置缺失，跳过端口可用性检查。</source>
         <translation>Skipping port availability check due to missing port configuration.</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="166"/>
+        <location filename="../Src/launch_tab.py" line="149"/>
+        <source>实例 {instance_name} 已经在运行中，无法重复启动。</source>
+        <translation>Instance {instance_name} is already running and cannot be started again.</translation>
+    </message>
+    <message>
+        <location filename="../Src/launch_tab.py" line="150"/>
+        <source>重复启动</source>
+        <translation>Duplicate startup</translation>
+    </message>
+    <message>
+        <location filename="../Src/launch_tab.py" line="150"/>
+        <source>实例 {instance_name} 已经在运行中。</source>
+        <translation>Instance {instance_name} is already running.</translation>
+    </message>
+    <message>
+        <location filename="../Src/launch_tab.py" line="171"/>
         <source>执行命令: {java_path} {&quot; &quot;.join([*jvm_pre_args, &quot;-jar&quot;, str(grasscutter_path), *jvm_post_args])}</source>
         <translation>Executing command: {java_path} {&quot; &quot;.join([*jvm_pre_args, &quot;-jar&quot;, str(grasscutter_path), *jvm_post_args])}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="210"/>
+        <location filename="../Src/launch_tab.py" line="209"/>
+        <location filename="../Src/launch_tab.py" line="216"/>
+        <source>进程启动错误: {process.errorString()}</source>
+        <translation>Process startup error: {process.errorString()}</translation>
+    </message>
+    <message>
+        <location filename="../Src/launch_tab.py" line="213"/>
         <source>启动实例 {instance_name} 时发生错误: {e}</source>
         <translation>Error starting instance {instance_name}: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="211"/>
+        <location filename="../Src/launch_tab.py" line="214"/>
         <source>读取配置文件失败或启动进程时发生错误: {e}</source>
         <translation>Failed to read configuration file or error starting process: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="226"/>
+        <location filename="../Src/launch_tab.py" line="227"/>
         <source>检测到 mongod.exe 进程，终止进程 {proc.info[&quot;pid&quot;]}</source>
         <translation>Detected mongod.exe process, terminating process {proc.info[&quot;pid&quot;]}</translation>
     </message>
     <message>
-        <location filename="../Src/launch_tab.py" line="231"/>
+        <location filename="../Src/launch_tab.py" line="232"/>
         <source>进程 {proc.info[&quot;pid&quot;]} 未正确终止，尝试强制终止</source>
         <translation>Process {proc.info[&quot;pid&quot;]} did not terminate correctly, attempting forced termination</translation>
     </message>
@@ -1144,62 +1163,62 @@ Grasscutter Path: {grasscutter_path}</translation>
 <context>
     <name>LogReaderThread</name>
     <message>
-        <location filename="../Src/monitor_tab.py" line="862"/>
+        <location filename="../Src/monitor_tab.py" line="869"/>
         <source>获取日志文件大小失败: {e}</source>
         <translation>Failed to get log file size: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="863"/>
+        <location filename="../Src/monitor_tab.py" line="870"/>
         <source>获取日志文件大小时发生错误: {str(e)}</source>
         <translation>Error getting log file size: {str(e)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="868"/>
+        <location filename="../Src/monitor_tab.py" line="875"/>
         <source>获取日志文件大小时发生未知错误: {e}</source>
         <translation>Unknown error getting log file size: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="869"/>
+        <location filename="../Src/monitor_tab.py" line="876"/>
         <source>检查日志文件大小时发生错误: {str(e)}</source>
         <translation>Error checking log file size: {str(e)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="895"/>
+        <location filename="../Src/monitor_tab.py" line="902"/>
         <source>日志文件编码错误: {ude}</source>
         <translation>Log file encoding error: {ude}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="896"/>
+        <location filename="../Src/monitor_tab.py" line="903"/>
         <source>日志文件编码错误，请检查文件编码</source>
         <translation>Log file encoding error, please check file encoding</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="899"/>
+        <location filename="../Src/monitor_tab.py" line="906"/>
         <source>无法访问日志文件: {e}</source>
         <translation>Cannot access log file: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="900"/>
+        <location filename="../Src/monitor_tab.py" line="907"/>
         <source>无法访问日志文件: {str(e)}</source>
         <translation>Cannot access log file: {str(e)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="903"/>
+        <location filename="../Src/monitor_tab.py" line="910"/>
         <source>读取日志文件时发生未知错误: {e}</source>
         <translation>Unknown error reading log file: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="904"/>
+        <location filename="../Src/monitor_tab.py" line="911"/>
         <source>读取日志文件时发生错误: {str(e)}</source>
         <translation>Error reading log file: {str(e)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="909"/>
+        <location filename="../Src/monitor_tab.py" line="916"/>
         <source>日志读取线程发生未知错误: {e}</source>
         <translation>Unknown error in log reading thread: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="910"/>
+        <location filename="../Src/monitor_tab.py" line="917"/>
         <source>日志读取线程发生未知错误: {str(e)}</source>
         <translation>Unknown error in log reading thread: {str(e)}</translation>
     </message>
@@ -1212,12 +1231,12 @@ Grasscutter Path: {grasscutter_path}</translation>
         <translation type="vanished">Serious error in log reading thread: {str(e)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="916"/>
+        <location filename="../Src/monitor_tab.py" line="923"/>
         <source>日志读取线程停止: {self.log_path}</source>
         <translation>Log reading thread stopped: {self.log_path}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="919"/>
+        <location filename="../Src/monitor_tab.py" line="926"/>
         <source>请求停止日志读取线程: {self.log_path}</source>
         <translation>Request to stop log reading thread: {self.log_path}</translation>
     </message>
@@ -1414,7 +1433,7 @@ Grasscutter Path: {grasscutter_path}</translation>
     <message>
         <location filename="../Src/manage_tab.py" line="499"/>
         <source>正在克隆实例 &quot;{original_instance_name}&quot; 为 &quot;{new_instance_name}&quot;...</source>
-        <translation>Cloning instance "{original_instance_name}" to "{new_instance_name}"...</translation>
+        <translation>Cloning instance &quot;{original_instance_name}&quot; to &quot;{new_instance_name}&quot;...</translation>
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="499"/>
@@ -1425,7 +1444,7 @@ Grasscutter Path: {grasscutter_path}</translation>
     <message>
         <location filename="../Src/manage_tab.py" line="504"/>
         <source>准备克隆 &quot;{original_instance_name}&quot; 到 &quot;{new_instance_name}&quot;...</source>
-        <translation>Preparing to clone "{original_instance_name}" to "{new_instance_name}"...</translation>
+        <translation>Preparing to clone &quot;{original_instance_name}&quot; to &quot;{new_instance_name}&quot;...</translation>
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="505"/>
@@ -1436,12 +1455,12 @@ Grasscutter Path: {grasscutter_path}</translation>
     <message>
         <location filename="../Src/manage_tab.py" line="533"/>
         <source>正在删除实例 &quot;{instance_name}&quot;...</source>
-        <translation>Deleting instance "{instance_name}"...</translation>
+        <translation>Deleting instance &quot;{instance_name}&quot;...</translation>
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="538"/>
         <source>准备删除实例 &quot;{instance_name}&quot;...</source>
-        <translation>Preparing to delete instance "{instance_name}"...</translation>
+        <translation>Preparing to delete instance &quot;{instance_name}&quot;...</translation>
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="562"/>
@@ -1462,7 +1481,7 @@ Grasscutter Path: {grasscutter_path}</translation>
 <context>
     <name>MonitorPanel</name>
     <message>
-        <location filename="../Src/monitor_tab.py" line="177"/>
+        <location filename="../Src/monitor_tab.py" line="183"/>
         <source>初始化监控面板 实例:{} PID:{} 日志路径:{} 进程对象:{} 调试模式:{}</source>
         <translation>Initializing monitor panel Instance:{} PID:{} Log Path:{} Process Object:{} Debug Mode:{}</translation>
     </message>
@@ -1471,69 +1490,69 @@ Grasscutter Path: {grasscutter_path}</translation>
         <translation type="vanished">Could not get process start time, PID invalid or process does not exist</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="197"/>
+        <location filename="../Src/monitor_tab.py" line="203"/>
         <source>加载主题设置失败: {}</source>
         <translation>Failed to load theme settings: {}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="205"/>
+        <location filename="../Src/monitor_tab.py" line="211"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="206"/>
+        <location filename="../Src/monitor_tab.py" line="212"/>
         <source>MEM</source>
         <translation>MEM</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="207"/>
+        <location filename="../Src/monitor_tab.py" line="213"/>
         <source>UpTime: 00h00m00s</source>
         <translation>UpTime: 00h00m00s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="210"/>
+        <location filename="../Src/monitor_tab.py" line="216"/>
         <source>发送</source>
         <translation>Send</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="211"/>
+        <location filename="../Src/monitor_tab.py" line="217"/>
         <source>清屏</source>
         <translation>Clear</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="212"/>
-        <location filename="../Src/monitor_tab.py" line="733"/>
+        <location filename="../Src/monitor_tab.py" line="218"/>
+        <location filename="../Src/monitor_tab.py" line="739"/>
         <source>关闭实例</source>
         <translation>Close Instance</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="222"/>
+        <location filename="../Src/monitor_tab.py" line="228"/>
         <source>在这里输入指令...</source>
         <translation>Enter command here...</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="226"/>
+        <location filename="../Src/monitor_tab.py" line="232"/>
         <source>监控面板: {self.instance_name} (调试模式)</source>
         <translation>Monitor Panel: {self.instance_name} (Debug Mode)</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="227"/>
-        <location filename="../Src/monitor_tab.py" line="537"/>
+        <location filename="../Src/monitor_tab.py" line="233"/>
+        <location filename="../Src/monitor_tab.py" line="543"/>
         <source>调试模式下无法发送命令</source>
         <translation>Cannot send commands in debug mode</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="230"/>
+        <location filename="../Src/monitor_tab.py" line="236"/>
         <source>关闭调试面板</source>
         <translation>Close Debug Panel</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="235"/>
+        <location filename="../Src/monitor_tab.py" line="241"/>
         <source>监控面板: {self.instance_name}</source>
         <translation>Monitor Panel: {self.instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="265"/>
+        <location filename="../Src/monitor_tab.py" line="271"/>
         <source>获取进程创建时间失败: {e}</source>
         <translation>Failed to get process creation time: {e}</translation>
     </message>
@@ -1542,333 +1561,333 @@ Grasscutter Path: {grasscutter_path}</translation>
         <translation type="vanished">Unknown error calculating process start time: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="321"/>
-        <location filename="../Src/monitor_tab.py" line="556"/>
-        <location filename="../Src/monitor_tab.py" line="571"/>
-        <location filename="../Src/monitor_tab.py" line="576"/>
-        <location filename="../Src/monitor_tab.py" line="608"/>
+        <location filename="../Src/monitor_tab.py" line="327"/>
+        <location filename="../Src/monitor_tab.py" line="562"/>
+        <location filename="../Src/monitor_tab.py" line="577"/>
+        <location filename="../Src/monitor_tab.py" line="582"/>
         <location filename="../Src/monitor_tab.py" line="614"/>
-        <location filename="../Src/monitor_tab.py" line="619"/>
-        <location filename="../Src/monitor_tab.py" line="689"/>
-        <location filename="../Src/monitor_tab.py" line="704"/>
-        <location filename="../Src/monitor_tab.py" line="709"/>
-        <location filename="../Src/monitor_tab.py" line="747"/>
-        <location filename="../Src/monitor_tab.py" line="752"/>
+        <location filename="../Src/monitor_tab.py" line="620"/>
+        <location filename="../Src/monitor_tab.py" line="625"/>
+        <location filename="../Src/monitor_tab.py" line="695"/>
+        <location filename="../Src/monitor_tab.py" line="710"/>
+        <location filename="../Src/monitor_tab.py" line="715"/>
+        <location filename="../Src/monitor_tab.py" line="753"/>
+        <location filename="../Src/monitor_tab.py" line="758"/>
         <source>错误</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="321"/>
+        <location filename="../Src/monitor_tab.py" line="327"/>
         <source>监控面板初始化失败: {e}</source>
         <translation>Monitor panel initialization failed: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="337"/>
+        <location filename="../Src/monitor_tab.py" line="343"/>
         <source>调试模式 - 设置 CPU 模拟值失败: {e}</source>
         <translation>Debug mode - Failed to set CPU simulation value: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="349"/>
+        <location filename="../Src/monitor_tab.py" line="355"/>
         <source>调试模式 - 设置内存模拟值失败: {e}</source>
         <translation>Debug mode - Failed to set memory simulation value: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="356"/>
+        <location filename="../Src/monitor_tab.py" line="362"/>
         <source>进程 {self.pid} 不存在，无法获取资源使用情况</source>
         <translation>Process {self.pid} does not exist, unable to get resource usage</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="381"/>
-        <location filename="../Src/monitor_tab.py" line="644"/>
+        <location filename="../Src/monitor_tab.py" line="387"/>
+        <location filename="../Src/monitor_tab.py" line="650"/>
         <source>访问进程 {self.pid} 信息失败: {e}</source>
         <translation>Failed to access process {self.pid} information: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="388"/>
-        <location filename="../Src/monitor_tab.py" line="651"/>
+        <location filename="../Src/monitor_tab.py" line="394"/>
+        <location filename="../Src/monitor_tab.py" line="657"/>
         <source>获取资源使用情况时发生错误: {e}</source>
         <translation>Error getting resource usage: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="398"/>
+        <location filename="../Src/monitor_tab.py" line="404"/>
         <source>无效PID:{} 进程状态:{}</source>
         <translation>Invalid PID:{} Process Status:{}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="402"/>
-        <location filename="../Src/monitor_tab.py" line="657"/>
+        <location filename="../Src/monitor_tab.py" line="408"/>
+        <location filename="../Src/monitor_tab.py" line="663"/>
         <source>更新资源使用情况时发生未知错误: {e}</source>
         <translation>Unknown error updating resource usage: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="417"/>
+        <location filename="../Src/monitor_tab.py" line="423"/>
         <source>UpTime:
 {int(hours):02d}h{int(minutes):02d}m{int(seconds):02d}s</source>
         <translation>UpTime:
 {int(hours):02d}h{int(minutes):02d}m{int(seconds):02d}s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="419"/>
+        <location filename="../Src/monitor_tab.py" line="425"/>
         <source>UpTime:
 N/A</source>
         <translation>UpTime:
 N/A</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="439"/>
+        <location filename="../Src/monitor_tab.py" line="445"/>
         <source>添加日志内容时发生错误: {e}</source>
         <translation>Error adding log content: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="469"/>
+        <location filename="../Src/monitor_tab.py" line="475"/>
         <source>读取配置文件中的MaxLogLines失败: {e}，将使用默认值1000</source>
         <translation>Failed to read MaxLogLines from config file: {e}, default value 1000 will be used</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="474"/>
+        <location filename="../Src/monitor_tab.py" line="480"/>
         <source>刷新日志缓冲区时发生错误: {e}</source>
         <translation>Error refreshing log buffer: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="479"/>
+        <location filename="../Src/monitor_tab.py" line="485"/>
         <source>日志读取错误: {error_message}</source>
         <translation>Log read error: {error_message}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="481"/>
+        <location filename="../Src/monitor_tab.py" line="487"/>
         <source>&lt;font color=&apos;red&apos;&gt;日志读取错误: {error_message}&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;red&apos;&gt;Log read error: {error_message}&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="483"/>
+        <location filename="../Src/monitor_tab.py" line="489"/>
         <source>处理日志错误时发生异常: {e}</source>
         <translation>Exception occurred while handling log error: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="489"/>
+        <location filename="../Src/monitor_tab.py" line="495"/>
         <source>已清空监控面板日志显示 实例:{self.instance_name}</source>
         <translation>Cleared monitor panel log display Instance:{self.instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="491"/>
+        <location filename="../Src/monitor_tab.py" line="497"/>
         <source>清空日志显示时发生错误: {e}</source>
         <translation>Error clearing log display: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="492"/>
-        <location filename="../Src/monitor_tab.py" line="559"/>
-        <location filename="../Src/monitor_tab.py" line="692"/>
+        <location filename="../Src/monitor_tab.py" line="498"/>
+        <location filename="../Src/monitor_tab.py" line="565"/>
+        <location filename="../Src/monitor_tab.py" line="698"/>
         <source>警告</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="492"/>
+        <location filename="../Src/monitor_tab.py" line="498"/>
         <source>清空日志显示失败: {e}</source>
         <translation>Failed to clear log display: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="496"/>
+        <location filename="../Src/monitor_tab.py" line="502"/>
         <source>监控面板关闭事件触发: {self.instance_name}</source>
         <translation>Monitor panel close event triggered: {self.instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="509"/>
+        <location filename="../Src/monitor_tab.py" line="515"/>
         <source>日志定时器已为实例 {self.instance_name} 停止</source>
         <translation>Log timer stopped for instance {self.instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="511"/>
+        <location filename="../Src/monitor_tab.py" line="517"/>
         <source>停止日志定时器时出错 ({self.instance_name}): {e}</source>
         <translation>Error stopping log timer ({self.instance_name}): {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="516"/>
+        <location filename="../Src/monitor_tab.py" line="522"/>
         <source>资源定时器已为实例 {self.instance_name} 停止</source>
         <translation>Resource timer stopped for instance {self.instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="518"/>
+        <location filename="../Src/monitor_tab.py" line="524"/>
         <source>停止资源定时器时出错 ({self.instance_name}): {e}</source>
         <translation>Error stopping resource timer ({self.instance_name}): {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="523"/>
+        <location filename="../Src/monitor_tab.py" line="529"/>
         <source>正在停止实例 {self.instance_name} 的日志读取线程...</source>
         <translation>Stopping log reading thread for instance {self.instance_name}...</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="525"/>
+        <location filename="../Src/monitor_tab.py" line="531"/>
         <source>实例 {self.instance_name} 的日志读取线程已请求停止</source>
         <translation>Log reading thread for instance {self.instance_name} has requested to stop</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="527"/>
+        <location filename="../Src/monitor_tab.py" line="533"/>
         <source>停止日志读取线程时出错 ({self.instance_name}): {e}</source>
         <translation>Error stopping log reading thread ({self.instance_name}): {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="529"/>
+        <location filename="../Src/monitor_tab.py" line="535"/>
         <source>监控面板 {self.instance_name} 清理操作完成，准备关闭。</source>
         <translation>Monitor panel {self.instance_name} cleanup completed, ready to close.</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="536"/>
+        <location filename="../Src/monitor_tab.py" line="542"/>
         <source>尝试在调试模式下发送命令</source>
         <translation>Attempting to send command in debug mode</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="537"/>
-        <location filename="../Src/monitor_tab.py" line="561"/>
-        <location filename="../Src/monitor_tab.py" line="694"/>
+        <location filename="../Src/monitor_tab.py" line="543"/>
+        <location filename="../Src/monitor_tab.py" line="567"/>
+        <location filename="../Src/monitor_tab.py" line="700"/>
         <source>提示</source>
         <translation>Hint</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="543"/>
+        <location filename="../Src/monitor_tab.py" line="549"/>
         <source>向实例 {self.instance_name} (PID: {self.pid}) 发送命令: {command}</source>
         <translation>Sending command to instance {self.instance_name} (PID: {self.pid}): {command}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="555"/>
+        <location filename="../Src/monitor_tab.py" line="561"/>
         <source>写入命令到进程 {self.pid} 失败. QProcess 错误: {error_string}</source>
         <translation>Failed to write command to process {self.pid}. QProcess error: {error_string}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="556"/>
+        <location filename="../Src/monitor_tab.py" line="562"/>
         <source>发送命令失败: {error_string}</source>
         <translation>Failed to send command: {error_string}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="558"/>
+        <location filename="../Src/monitor_tab.py" line="564"/>
         <source>命令可能未完全写入进程 {self.pid}. 写入 {bytes_written}/{len(full_command)} 字节.</source>
         <translation>Command may not have been fully written to process {self.pid}. Wrote {bytes_written}/{len(full_command)} bytes.</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="559"/>
-        <location filename="../Src/monitor_tab.py" line="692"/>
+        <location filename="../Src/monitor_tab.py" line="565"/>
+        <location filename="../Src/monitor_tab.py" line="698"/>
         <source>命令可能未完全发送</source>
         <translation>Command may not have been fully sent</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="561"/>
+        <location filename="../Src/monitor_tab.py" line="567"/>
         <source>命令 &apos;{command}&apos; 已发送 (可能不完整)</source>
         <translation>Command &apos;{command}&apos; sent (possibly incomplete)</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="565"/>
+        <location filename="../Src/monitor_tab.py" line="571"/>
         <source>命令成功发送到进程 {self.pid} (通过 QProcess)</source>
         <translation>Command successfully sent to process {self.pid} (via QProcess)</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="570"/>
+        <location filename="../Src/monitor_tab.py" line="576"/>
         <source>通过 QProcess 发送命令时出错: {e}</source>
         <translation>Error sending command via QProcess: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="571"/>
+        <location filename="../Src/monitor_tab.py" line="577"/>
         <source>发送命令时发生意外错误: {e}</source>
         <translation>Unexpected error sending command: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="575"/>
+        <location filename="../Src/monitor_tab.py" line="581"/>
         <source>无法发送命令:进程对象无效或进程未运行 (PID: {self.pid}, Process: {self.process}, State: {process_state})</source>
         <translation>Cannot send command: process object invalid or process not running (PID: {self.pid}, Process: {self.process}, State: {process_state})</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="576"/>
-        <location filename="../Src/monitor_tab.py" line="709"/>
+        <location filename="../Src/monitor_tab.py" line="582"/>
+        <location filename="../Src/monitor_tab.py" line="715"/>
         <source>目标进程无效或未运行，无法发送命令</source>
         <translation>Target process invalid or not running, cannot send command</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="585"/>
-        <location filename="../Src/monitor_tab.py" line="714"/>
+        <location filename="../Src/monitor_tab.py" line="591"/>
+        <location filename="../Src/monitor_tab.py" line="720"/>
         <source>尝试在调试模式下停止实例</source>
         <translation>Attempting to stop instance in debug mode</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="589"/>
-        <location filename="../Src/monitor_tab.py" line="718"/>
+        <location filename="../Src/monitor_tab.py" line="595"/>
+        <location filename="../Src/monitor_tab.py" line="724"/>
         <source>确认</source>
         <translation>Confirm</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="589"/>
+        <location filename="../Src/monitor_tab.py" line="595"/>
         <source>确定要关闭实例 {self.instance_name} (PID: {self.pid}) 吗？</source>
         <translation>Are you sure you want to close instance {self.instance_name} (PID: {self.pid})?</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="591"/>
+        <location filename="../Src/monitor_tab.py" line="597"/>
         <source>正在尝试关闭实例 {self.instance_name} (PID: {self.pid})</source>
         <translation>Attempting to close instance {self.instance_name} (PID: {self.pid})</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="598"/>
+        <location filename="../Src/monitor_tab.py" line="604"/>
         <source>实例 {self.instance_name} (PID: {self.pid}) 已成功终止</source>
         <translation>Instance {self.instance_name} (PID: {self.pid}) terminated successfully</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="600"/>
+        <location filename="../Src/monitor_tab.py" line="606"/>
         <source>实例 {self.instance_name} (PID: {self.pid}) 未能在5秒内终止，尝试强制结束</source>
         <translation>Instance {self.instance_name} (PID: {self.pid}) did not terminate within 5 seconds, attempting to force close</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="603"/>
+        <location filename="../Src/monitor_tab.py" line="609"/>
         <source>实例 {self.instance_name} (PID: {self.pid}) 已强制结束</source>
         <translation>Instance {self.instance_name} (PID: {self.pid}) force closed</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="607"/>
+        <location filename="../Src/monitor_tab.py" line="613"/>
         <source>实例 {self.instance_name} (PID: {self.pid}) 进程不存在或无效</source>
         <translation>Instance {self.instance_name} (PID: {self.pid}) process does not exist or is invalid</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="608"/>
+        <location filename="../Src/monitor_tab.py" line="614"/>
         <source>进程不存在或无效</source>
         <translation>Process does not exist or is invalid</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="613"/>
+        <location filename="../Src/monitor_tab.py" line="619"/>
         <source>关闭实例 {self.instance_name} (PID: {self.pid}) 时出错: {e}</source>
         <translation>Error closing instance {self.instance_name} (PID: {self.pid}): {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="614"/>
+        <location filename="../Src/monitor_tab.py" line="620"/>
         <source>关闭进程时出错: {e}</source>
         <translation>Error closing process: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="618"/>
+        <location filename="../Src/monitor_tab.py" line="624"/>
         <source>关闭实例时发生未知错误: {e}</source>
         <translation>Unknown error occurred while closing instance: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="619"/>
+        <location filename="../Src/monitor_tab.py" line="625"/>
         <source>关闭进程时发生未知错误: {e}</source>
         <translation>Unknown error occurred while closing process: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="670"/>
+        <location filename="../Src/monitor_tab.py" line="676"/>
         <source>无效PID:{self.pid} 进程状态:{psutil.pid_exists(self.pid) if self.pid and self.pid != -1 else &quot;N/A&quot;}</source>
         <translation>Invalid PID:{self.pid} Process status:{psutil.pid_exists(self.pid) if self.pid and self.pid != -1 else &quot;N/A&quot;}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="723"/>
+        <location filename="../Src/monitor_tab.py" line="729"/>
         <source>正在关闭...</source>
         <translation>Shutting down...</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="736"/>
+        <location filename="../Src/monitor_tab.py" line="742"/>
         <source>实例 %s 关闭完成: %s</source>
         <translation>Instance %s shutdown complete: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="738"/>
+        <location filename="../Src/monitor_tab.py" line="744"/>
         <source>实例 %s 关闭失败: %s</source>
         <translation>Instance %s shutdown failed: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="739"/>
+        <location filename="../Src/monitor_tab.py" line="745"/>
         <source>关闭失败</source>
         <translation>Shutdown failed</translation>
     </message>
@@ -1877,57 +1896,57 @@ N/A</translation>
         <translation type="vanished">Invalid PID:{self.pid} Process State:{psutil.pid_exists(self.pid) if self.pid and self.pid != -1 else </translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="676"/>
+        <location filename="../Src/monitor_tab.py" line="682"/>
         <source>向实例 %s (PID: %s) 发送命令: %s</source>
         <translation>Sending command to instance %s (PID: %s): %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="688"/>
+        <location filename="../Src/monitor_tab.py" line="694"/>
         <source>写入命令到进程 %s 失败. QProcess 错误: %s</source>
         <translation>Failed to write command to process %s. QProcess error: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="689"/>
+        <location filename="../Src/monitor_tab.py" line="695"/>
         <source>发送命令失败: %s</source>
         <translation>Failed to send command: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="691"/>
+        <location filename="../Src/monitor_tab.py" line="697"/>
         <source>命令可能未完全写入进程 %s. 写入 %s/%s 字节.</source>
         <translation>Command may not have been fully written to process %s. Wrote %s/%s bytes.</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="694"/>
+        <location filename="../Src/monitor_tab.py" line="700"/>
         <source>命令 &apos;%s&apos; 已发送 (可能不完整)</source>
         <translation>Command &apos;%s&apos; sent (possibly incomplete)</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="698"/>
+        <location filename="../Src/monitor_tab.py" line="704"/>
         <source>命令成功发送到进程 %s (通过 QProcess)</source>
         <translation>Command successfully sent to process %s (via QProcess)</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="703"/>
+        <location filename="../Src/monitor_tab.py" line="709"/>
         <source>通过 QProcess 发送命令时出错: %s</source>
         <translation>Error sending command via QProcess: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="704"/>
+        <location filename="../Src/monitor_tab.py" line="710"/>
         <source>发送命令时发生意外错误: %s</source>
         <translation>Unexpected error sending command: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="708"/>
+        <location filename="../Src/monitor_tab.py" line="714"/>
         <source>无法发送命令:进程对象无效或进程未运行 (PID: %s, Process: %s, State: %s)</source>
         <translation>Cannot send command: process object invalid or process not running (PID: %s, Process: %s, State: %s)</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="718"/>
+        <location filename="../Src/monitor_tab.py" line="724"/>
         <source>确定要关闭实例 %s (PID: %s) 吗？</source>
         <translation>Are you sure you want to close instance %s (PID: %s)?</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="720"/>
+        <location filename="../Src/monitor_tab.py" line="726"/>
         <source>正在尝试关闭实例 %s (PID: %s)</source>
         <translation>Attempting to close instance %s (PID: %s)</translation>
     </message>
@@ -1968,67 +1987,67 @@ N/A</translation>
         <translation type="vanished">Instance %s (PID: %s) process does not exist or is invalid</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="746"/>
+        <location filename="../Src/monitor_tab.py" line="752"/>
         <source>关闭实例 %s (PID: %s) 时出错: %s</source>
         <translation>Error closing instance %s (PID: %s): %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="747"/>
+        <location filename="../Src/monitor_tab.py" line="753"/>
         <source>关闭进程时出错: %s</source>
         <translation>Error closing process: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="751"/>
+        <location filename="../Src/monitor_tab.py" line="757"/>
         <source>关闭实例时发生未知错误: %s</source>
         <translation>Unknown error occurred while closing instance: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="752"/>
+        <location filename="../Src/monitor_tab.py" line="758"/>
         <source>关闭进程时发生未知错误: %s</source>
         <translation>Unknown error occurred while closing process: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="770"/>
+        <location filename="../Src/monitor_tab.py" line="776"/>
         <source>正在停止日志读取线程: %s</source>
         <translation>Stopping log reading thread: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="779"/>
+        <location filename="../Src/monitor_tab.py" line="785"/>
         <source>监控面板已关闭: %s</source>
         <translation>Monitor panel closed: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="781"/>
+        <location filename="../Src/monitor_tab.py" line="788"/>
         <source>关闭监控面板时发生错误: %s</source>
         <translation>Error closing monitor panel: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="799"/>
+        <location filename="../Src/monitor_tab.py" line="806"/>
         <source>模拟日志条目 CPU: %s%%, Mem: %sMB</source>
         <translation>Simulated log entry CPU: %s%%, Mem: %sMB</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="800"/>
+        <location filename="../Src/monitor_tab.py" line="807"/>
         <source>处理客户端请求...</source>
         <translation>Processing client request...</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="801"/>
+        <location filename="../Src/monitor_tab.py" line="808"/>
         <source>加载资源完成</source>
         <translation>Resource loading completed</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="804"/>
+        <location filename="../Src/monitor_tab.py" line="811"/>
         <source>等待连接...</source>
         <translation>Waiting for connection...</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="822"/>
+        <location filename="../Src/monitor_tab.py" line="829"/>
         <source>更新日志时发生错误: %s</source>
         <translation>Error updating log: %s</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="833"/>
+        <location filename="../Src/monitor_tab.py" line="840"/>
         <source>裁剪日志文本时发生错误: %s</source>
         <translation>Error cropping log text: %s</translation>
     </message>
@@ -2036,208 +2055,215 @@ N/A</translation>
 <context>
     <name>MonitorTab</name>
     <message>
-        <location filename="../Src/monitor_tab.py" line="930"/>
+        <location filename="../Src/monitor_tab.py" line="937"/>
         <source>数据库状态:未连接</source>
         <translation>Database Status: Disconnected</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="931"/>
+        <location filename="../Src/monitor_tab.py" line="938"/>
+        <location filename="../Src/monitor_tab.py" line="1111"/>
         <source>运行实例数:0</source>
         <translation>Running Instances: 0</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="934"/>
+        <location filename="../Src/monitor_tab.py" line="941"/>
         <source>运行实例:</source>
         <translation>Running Instances:</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="937"/>
+        <location filename="../Src/monitor_tab.py" line="944"/>
         <source>打开监控面板</source>
         <translation>Open Monitor Panel</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="939"/>
+        <location filename="../Src/monitor_tab.py" line="946"/>
         <source>手动刷新</source>
         <translation>Manual Refresh</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="957"/>
-        <location filename="../Src/monitor_tab.py" line="999"/>
+        <location filename="../Src/monitor_tab.py" line="964"/>
+        <location filename="../Src/monitor_tab.py" line="1006"/>
         <source>警告</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="957"/>
+        <location filename="../Src/monitor_tab.py" line="964"/>
         <source>请先选择一个运行实例</source>
         <translation>Please select a running instance first</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="961"/>
+        <location filename="../Src/monitor_tab.py" line="968"/>
         <source>尝试打开实例监控面板: {instance_name}</source>
         <translation>Attempting to open instance monitor panel: {instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="971"/>
+        <location filename="../Src/monitor_tab.py" line="978"/>
         <source>找不到实例信息: {instance_name}</source>
         <translation>Instance information not found: {instance_name}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="972"/>
-        <location filename="../Src/monitor_tab.py" line="981"/>
-        <location filename="../Src/monitor_tab.py" line="992"/>
-        <location filename="../Src/monitor_tab.py" line="1007"/>
-        <location filename="../Src/monitor_tab.py" line="1016"/>
-        <location filename="../Src/monitor_tab.py" line="1021"/>
-        <location filename="../Src/monitor_tab.py" line="1031"/>
-        <location filename="../Src/monitor_tab.py" line="1038"/>
+        <location filename="../Src/monitor_tab.py" line="979"/>
+        <location filename="../Src/monitor_tab.py" line="988"/>
+        <location filename="../Src/monitor_tab.py" line="999"/>
+        <location filename="../Src/monitor_tab.py" line="1014"/>
+        <location filename="../Src/monitor_tab.py" line="1023"/>
+        <location filename="../Src/monitor_tab.py" line="1028"/>
+        <location filename="../Src/monitor_tab.py" line="1039"/>
+        <location filename="../Src/monitor_tab.py" line="1046"/>
         <source>错误</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="972"/>
+        <location filename="../Src/monitor_tab.py" line="979"/>
         <source>选择的实例信息丢失或已停止运行，请刷新列表</source>
         <translation>Selected instance information is missing or has stopped running, please refresh the list</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="980"/>
+        <location filename="../Src/monitor_tab.py" line="987"/>
         <source>进程不存在: PID={pid}</source>
         <translation>Process does not exist: PID={pid}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="981"/>
-        <location filename="../Src/monitor_tab.py" line="1007"/>
+        <location filename="../Src/monitor_tab.py" line="988"/>
+        <location filename="../Src/monitor_tab.py" line="1014"/>
         <source>选择的实例未运行或进程已消失</source>
         <translation>Selected instance is not running or process has disappeared</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="991"/>
+        <location filename="../Src/monitor_tab.py" line="998"/>
         <source>无法获取 MainWindow 实例或其不包含 running_processes 字典</source>
         <translation>Could not get MainWindow instance or it does not contain running_processes dictionary</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="992"/>
+        <location filename="../Src/monitor_tab.py" line="999"/>
         <source>内部错误:无法访问主窗口的进程列表，无法打开监控面板。</source>
         <translation>Internal error: Cannot access main window&apos;s process list, unable to open monitor panel.</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="998"/>
+        <location filename="../Src/monitor_tab.py" line="1005"/>
         <source>无法找到 PID {pid} 对应的 QProcess 对象，监控面板将以只读模式打开</source>
         <translation>Could not find QProcess object for PID {pid}, monitor panel will open in read-only mode</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="999"/>
+        <location filename="../Src/monitor_tab.py" line="1006"/>
         <source>无法找到与实例关联的进程对象。
 监控面板将以只读模式打开，无法发送命令。</source>
         <translation>Could not find process object associated with instance.
 Monitor panel will open in read-only mode, unable to send commands.</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1006"/>
+        <location filename="../Src/monitor_tab.py" line="1013"/>
         <source>延迟创建监控面板时发现进程已不存在: PID={pid}</source>
         <translation>Process no longer exists when creating monitor panel: PID={pid}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1015"/>
+        <location filename="../Src/monitor_tab.py" line="1022"/>
         <source>进程类型异常 PID:{pid} 名称:{proc_psutil.name()} 期望:java*</source>
         <translation>Process type abnormal PID:{pid} Name:{proc_psutil.name()} Expected:java*</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1016"/>
+        <location filename="../Src/monitor_tab.py" line="1023"/>
         <source>选择的实例似乎不是Java进程</source>
         <translation>Selected instance does not seem to be a Java process</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1020"/>
+        <location filename="../Src/monitor_tab.py" line="1027"/>
         <source>访问进程 {pid} 信息失败: {e}</source>
         <translation>Failed to access process {pid} information: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1021"/>
+        <location filename="../Src/monitor_tab.py" line="1028"/>
         <source>无法访问进程信息: {e}</source>
         <translation>Unable to access process information: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1028"/>
+        <location filename="../Src/monitor_tab.py" line="1036"/>
         <source>成功打开监控面板: {instance_name} (PID: {pid})</source>
         <translation>Successfully opened monitor panel: {instance_name} (PID: {pid})</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1030"/>
+        <location filename="../Src/monitor_tab.py" line="1038"/>
         <source>创建监控面板时发生错误: {e}</source>
         <translation>Error creating monitor panel: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1031"/>
+        <location filename="../Src/monitor_tab.py" line="1039"/>
         <source>打开监控面板失败: {e}</source>
         <translation>Failed to open monitor panel: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1037"/>
+        <location filename="../Src/monitor_tab.py" line="1045"/>
         <source>打开监控面板过程中发生未捕获的错误: {e}</source>
         <translation>Uncaught error occurred while opening monitor panel: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1038"/>
+        <location filename="../Src/monitor_tab.py" line="1046"/>
         <source>打开监控面板时发生未知错误: {e}</source>
         <translation>Unknown error occurred while opening monitor panel: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1047"/>
+        <location filename="../Src/monitor_tab.py" line="1055"/>
         <source>数据库状态:已连接</source>
         <translation>Database Status: Connected</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1051"/>
+        <location filename="../Src/monitor_tab.py" line="1059"/>
         <source>更新资源使用情况时发生错误: {e}</source>
         <translation>Error updating resource usage: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1058"/>
+        <location filename="../Src/monitor_tab.py" line="1066"/>
         <source>服务器目录 {servers_path} 不存在，无法扫描实例</source>
         <translation>Server directory {servers_path} does not exist, unable to scan instances</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1073"/>
+        <location filename="../Src/monitor_tab.py" line="1081"/>
         <source>Lock 文件 {lock_path} 中缺少 PID</source>
         <translation>Missing PID in Lock file {lock_path}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1083"/>
+        <location filename="../Src/monitor_tab.py" line="1091"/>
         <source>PID {pid} 进程名称不符: {proc.name()} (来自 {instance_name})，清理 lock 文件</source>
         <translation>PID {pid} process name mismatch: {proc.name()} (from {instance_name}), cleaning lock file</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1086"/>
+        <location filename="../Src/monitor_tab.py" line="1094"/>
         <source>无法访问 PID {pid} (来自 {instance_name})，可能已退出，清理 lock 文件</source>
         <translation>Cannot access PID {pid} (from {instance_name}), may have exited, cleaning lock file</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1089"/>
+        <location filename="../Src/monitor_tab.py" line="1097"/>
         <source>PID {pid} (来自 {instance_name}) 不存在，清理 lock 文件</source>
         <translation>PID {pid} (from {instance_name}) does not exist, cleaning lock file</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1092"/>
+        <location filename="../Src/monitor_tab.py" line="1100"/>
         <source>Lock 文件 {lock_path} 内容不合法，已忽略</source>
         <translation>Lock file {lock_path} content is illegal, ignored</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1095"/>
+        <location filename="../Src/monitor_tab.py" line="1103"/>
         <source>处理实例 {instance_name} 时发生错误: {e}</source>
         <translation>Error processing instance {instance_name}: {e}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1099"/>
+        <location filename="../Src/monitor_tab.py" line="1121"/>
+        <source>手动刷新运行实例列表</source>
+        <translation>Manually refresh running instance list</translation>
+    </message>
+    <message>
+        <location filename="../Src/monitor_tab.py" line="1126"/>
         <source>运行实例列表已更新，当前数量: {len(new_running_instances)}</source>
         <translation>Running instance list updated, current count: {len(new_running_instances)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1108"/>
+        <location filename="../Src/monitor_tab.py" line="1118"/>
+        <location filename="../Src/monitor_tab.py" line="1134"/>
         <source>运行实例数:{len(self.running_instances)}</source>
         <translation>Running instances: {len(self.running_instances)}</translation>
     </message>
     <message>
-        <location filename="../Src/monitor_tab.py" line="1117"/>
+        <location filename="../Src/monitor_tab.py" line="1143"/>
         <source>手动刷新实例列表</source>
         <translation>Manually refresh instance list</translation>
     </message>

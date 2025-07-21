@@ -16,6 +16,11 @@ def check_port(port: int, protocol: str = 'tcp') -> tuple:
             if conn.status == 'LISTEN' and conn.laddr.port == port:
                 process = psutil.Process(conn.pid) if conn.pid else None
                 process_name = process.name() if process else '未知进程'
+                # 如果是27017端口被mongod.exe占用，则认为是正常情况，不视为占用
+                if port == 27017 and process_name == 'mongod.exe':
+                    logger.debug(f'端口{port}被mongod.exe占用，视为正常情况。')
+                    return (False, {})
+
                 process_path = process.exe() if process and hasattr(process, 'exe') else '未知路径'
                 info = {
                     'pid': conn.pid,

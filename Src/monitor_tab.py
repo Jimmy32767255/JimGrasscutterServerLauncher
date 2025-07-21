@@ -14,7 +14,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton,
-    QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog
+    QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog, QListWidgetItem
 )
 
 class CircleProgress(QWidget):
@@ -166,7 +166,13 @@ class InstanceStopperThread(QThread):
             logger.error(self.tr('关闭实例 %s (PID: %s) 时发生错误: %s') % (self.instance_name, self.pid, e))
             self.finished.emit(self.instance_name, False, self.tr(f'关闭实例时发生错误: {e}'))
 
+    def closeEvent(self, event):
+        # 在窗口关闭事件中发射信号
+        self.panel_closed.emit()
+        super().closeEvent(event)
+
 class MonitorPanel(QDialog):
+    panel_closed = pyqtSignal() # 新增信号，用于通知面板已关闭
     instance_closed_signal = pyqtSignal(str) # 实例关闭信号，参数为 instance_name
     process_disappeared_signal = pyqtSignal(str) # 进程消失信号，参数为 instance_name
 
@@ -777,6 +783,7 @@ class MonitorPanel(QDialog):
                 self._log_buffer = ""
 
             logger.debug(self.tr('监控面板已关闭: %s') % self.instance_name)
+            self.panel_closed.emit() # 发射信号
         except Exception as e:
             logger.error(self.tr('关闭监控面板时发生错误: %s') % e)
 
@@ -1024,6 +1031,7 @@ class MonitorTab(QWidget):
 
                     # 创建并显示监控面板
                     self.monitor_panel = MonitorPanel(instance_name, pid, log_file_path, process=process_obj)
+                    self.monitor_panel.panel_closed.connect(self.scan_running_instances) # 连接信号
                     self.monitor_panel.show()
                     logger.info(self.tr(f'成功打开监控面板: {instance_name} (PID: {pid})'))
                 except Exception as e:
@@ -1094,11 +1102,29 @@ class MonitorTab(QWidget):
                     except Exception as e:
                         logger.error(self.tr(f"处理实例 {instance_name} 时发生错误: {e}"))
 
+        self.running_instances = new_running_instances
+        self.update_instance_display()
+
+    def update_instance_display(self):
+        self.instance_list.clear()
+        if not self.running_instances:
+            self.instance_status.setText(self.tr("运行实例数:0"))
+            return
+
+        for pid, path in self.running_instances:
+            instance_name = os.path.basename(path)
+            item = QListWidgetItem(instance_name)
+            self.instance_list.addItem(item)
+        self.instance_status.setText(self.tr(f"运行实例数:{len(self.running_instances)}"))
+
+    def on_manual_refresh(self):
+        logger.info(self.tr("手动刷新运行实例列表"))
+        self.scan_running_instances()
+
         # 比较新旧列表，只在有变化时更新显示
         if set(new_running_instances) != set(self.running_instances):
             logger.info(self.tr(f"运行实例列表已更新，当前数量: {len(new_running_instances)}"))
             self.running_instances = new_running_instances
-            # self.update_instance_display() # 移除重复调用
         current_item = self.instance_list.currentItem()
         current_selected = current_item.text() if current_item else None
 

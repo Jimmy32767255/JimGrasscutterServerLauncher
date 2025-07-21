@@ -36,6 +36,6 @@ Src:JGSL的代码文件
 
 Themes:JGSL的主题文件目录(包含JGSL的主题文件)
 
-Translations:JGSL的翻译文件(Translations\语言代码.json)
+Translations:JGSL的翻译文件
 
 Web:公共网页目录(所有Grasscutter实例共享同一个网页目录，用于Grasscutter的网页功能)
