@@ -73,7 +73,7 @@ jobs:
           last_tag=${{ steps.get_tag.outputs.tag }}
           log=$(git log "$last_tag"..HEAD --pretty=format:"- %s")
           if [ -z "$log" ]; then
-            log="没有发现更改/No significant changes."
+            log="没有发现新更改/No significant changes."
           fi
           echo "$log" > changelog.txt
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
