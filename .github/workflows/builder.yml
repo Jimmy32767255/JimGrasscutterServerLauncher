@@ -52,11 +52,11 @@ jobs:
             fi
           elif [ "$event_name" = "pull_request" ]; then
             major=$((major + 1))
-         else
+          else
             echo "手动触发的构建，拒绝生成版本号，不创建release和tag/Manual trigger-skipping version/tag creation"
             echo "skip_release=true" >> $GITHUB_OUTPUT
             exit 0
-         fi
+          fi
           new_tag="V$major.$minor.$run_number"
           echo "新的版本！/New tag: $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
