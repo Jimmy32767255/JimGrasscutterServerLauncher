@@ -26,6 +26,7 @@
 /参考/*
 /.vscode/*
 /.DS_Store
+/.vercel/*
 
 # 排除以下文件
 /Config/cluster-list.json
