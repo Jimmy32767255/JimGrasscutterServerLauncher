@@ -2,7 +2,10 @@ import os
 import json
 import requests
 from loguru import logger
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QSizePolicy, QComboBox, QCheckBox
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, 
+    QListWidgetItem, QSizePolicy, QComboBox, QCheckBox
+)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QDateTime
 
 class GitHubActivityThread(QThread):

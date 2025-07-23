@@ -2,14 +2,12 @@ import os
 import sys
 import json
 import signal
-import fe_core
 import webbrowser
 from loguru import logger
-from PyQt5.QtCore import Qt, QLocale
+from PyQt5.QtCore import Qt, QTranslator
 from main_window import MainWindow
-from PyQt5.QtGui import QFontDatabase, QFont, QIcon
+from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtCore import QTranslator # 导入 QTranslator
 from update_checker import UpdateCheckThread, VERSION
 
 # 全局翻译器实例

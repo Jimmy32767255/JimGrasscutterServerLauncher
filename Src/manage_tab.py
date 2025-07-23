@@ -4,7 +4,7 @@ import shutil
 import psutil
 from pathlib import Path
 from loguru import logger
-from config_editor import ConfigEditorDialog
+from json_editor import JSONEditor as ConfigEditorDialog
 from plugin_manager import PluginManagerDialog
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -377,8 +377,8 @@ class ManageTab(QWidget):
         if not os.path.exists(config_path):
             QMessageBox.warning(self, self.tr('错误'), self.tr('config.json不存在'))
             return
-        config_editor = ConfigEditorDialog(self, config_path)
-        config_editor.exec_()
+        self.config_editor = ConfigEditorDialog(config_path)
+        self.config_editor.show()
 
     def edit_instance(self):
         current_item = self.server_list.currentItem()

@@ -3,7 +3,7 @@ import asyncio
 import websockets
 from loguru import logger
 from .dispatch_config import ServerConfig, PacketIds
-from typing import Optional, Dict, List, Callable, Any
+from typing import Optional, Dict, List, Callable
 
 class DispatchServer:
     """内置调度服务器实现

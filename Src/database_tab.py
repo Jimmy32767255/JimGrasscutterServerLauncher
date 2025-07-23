@@ -11,7 +11,10 @@ from loguru import logger
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 from database_editor_dialog import DatabaseEditorDialog
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFileDialog, QMessageBox, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
+    QLabel, QFileDialog, QMessageBox, QSpacerItem, QSizePolicy
+)
 
 class DatabaseTab(QWidget):
     def __init__(self, parent=None):

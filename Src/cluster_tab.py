@@ -303,7 +303,7 @@ class ClusterConfigDialog(QDialog):
         
     def open_title_config(self):
         """打开标题配置对话框"""
-        from config_editor import ConfigEditorDialog
+        from json_editor import JSONEditor as ConfigEditorDialog
         
         # 获取当前选中的游戏服务器
         selected_items = self.game_server_list.selectedItems()
@@ -315,8 +315,8 @@ class ClusterConfigDialog(QDialog):
         
         # 创建并显示配置编辑器对话框
         config_path = os.path.join("Servers", server_name, "JGSL", "Config.json")
-        dialog = ConfigEditorDialog(self, config_path)
-        dialog.exec_()
+        dialog = ConfigEditorDialog(config_path)
+        dialog.show()
 
     def accept(self):
         """处理确定按钮点击事件，保存集群配置"""
