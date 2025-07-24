@@ -130,7 +130,7 @@ class LaunchTab(QWidget):
 
             # 只有当端口有效时才进行端口检查
             if dispatch_port and game_port:
-                port_results = check_ports([(27017, 'tcp'), (dispatch_port, 'tcp'), (game_port, 'udp')], run_mode=run_mode, dispatch_port=dispatch_port)
+                port_results = check_ports([(27017, 'tcp'), (dispatch_port, 'tcp'), (game_port, 'udp')], run_mode=run_mode, dispatch_port=dispatch_port, game_port=game_port)
                 for port, proto, occupied, info in port_results:
                     if occupied:
                         logger.error(self.tr(f'端口 {port}/{proto} 被进程占用: {info}'))
