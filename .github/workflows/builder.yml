@@ -73,7 +73,12 @@ jobs:
           last_tag=${{ steps.get_tag.outputs.tag }}
           log=$(git log "$last_tag"..HEAD --pretty=format:"- %s")
           if [ -z "$log" ]; then
-            log="没有发现更改/No significant changes."
+            echo 没有生成更改日志，请在控制台手动编写[支持MD语法]
+            log="${{ github.event.inputs.changelog }}"
+            if [ -z "$log" ]; then
+              echo "未手动填写 changelog，设置为默认提示"
+              log="没有发现新更改/No significant changes."
+            fi
           fi
           echo "$log" > changelog.txt
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
