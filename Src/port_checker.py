@@ -2,7 +2,7 @@ import psutil
 from loguru import logger
 
 
-def check_port(port: int, protocol: str = 'tcp') -> tuple:
+def check_port(port: int, protocol: str = 'tcp', run_mode: str = None, dispatch_port: int = None) -> tuple:
     """
     检查指定端口和协议是否被占用
     :param port: 要检查的端口号
@@ -20,6 +20,10 @@ def check_port(port: int, protocol: str = 'tcp') -> tuple:
                 if port == 27017 and process_name == 'mongod.exe':
                     logger.debug(f'端口{port}被mongod.exe占用，视为正常情况。')
                     return (False, {})
+                # 如果是Dispatch端口且运行模式为GAME_ONLY，则视为正常情况
+                if run_mode == 'GAME_ONLY' and protocol == 'tcp' and port == dispatch_port:
+                    logger.debug(f'端口{port}被进程{process_name}占用，但运行模式为GAME_ONLY，视为正常情况。')
+                    return (False, {})
 
                 process_path = process.exe() if process and hasattr(process, 'exe') else '未知路径'
                 info = {
@@ -34,8 +38,7 @@ def check_port(port: int, protocol: str = 'tcp') -> tuple:
         logger.error(f'端口{port}检查异常: {e}')
         return False, {}
 
-
-def check_ports(ports: list) -> list:
+def check_ports(ports: list, run_mode: str = None, dispatch_port: int = None) -> list:
     """
     批量检查多个端口的占用情况
     :param ports: 端口配置列表，格式示例:
@@ -51,7 +54,7 @@ def check_ports(ports: list) -> list:
     logger.info(f'开始批量检查{len(ports)}个端口')
     for port_config in ports:
         port, protocol = port_config
-        occupied, info = check_port(port, protocol)
+        occupied, info = check_port(port, protocol, run_mode, dispatch_port)
         if occupied:
             occupied_count += 1
         results.append((port, protocol, occupied, info))
