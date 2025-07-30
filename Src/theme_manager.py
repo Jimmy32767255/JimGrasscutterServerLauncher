@@ -10,7 +10,6 @@ class ThemeManager:
     def __init__(self, tr_func):
         self.parent_widget = None
         self.tr = tr_func
-
         self.theme_label = QLabel(self.tr("界面主题:"))
         self.theme_combo = QComboBox()
         self.load_themes()
