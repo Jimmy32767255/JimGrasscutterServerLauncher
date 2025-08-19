@@ -1,235 +1,192 @@
-import json
 import asyncio
-import websockets
+import json
 from loguru import logger
-from .dispatch_config import ServerConfig, PacketIds
-from typing import Optional, Dict, List, Callable
+from websockets.server import serve
+from websockets.exceptions import ConnectionClosedOK
+import asyncio
+
+from config import Configuration
+from crypto import xor_crypt
+
+class PacketIds:
+    LOGIN_NOTIFY = 1
+    TOKEN_VALIDATE_REQ = 2
+    GET_ACCOUNT_REQ = 3
+    SERVER_MESSAGE_NOTIFY = 4
+    TOKEN_VALIDATE_RSP = 5
+    GET_ACCOUNT_RSP = 6
 
 class DispatchServer:
-    """内置调度服务器实现
-    
-    负责处理WebSocket连接和消息分发
-    """
-    def __init__(self, config: ServerConfig):
-        self.config = config
-        self.host = config.host
-        self.port = config.dispatch_port
-        self.dispatch_key = config.dispatch_key
-        self.encryption_key = config.encryption_key.encode()
-        self.clients: Dict[str, websockets.WebSocketServerProtocol] = {}
-        self.server: Optional[websockets.WebSocketServer] = None
-        self.handlers: Dict[int, Callable] = {}
-        self.callbacks: Dict[int, List[Callable]] = {}
-        
-        # 注册默认处理器
-        self._register_default_handlers()
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.handlers = {
+            PacketIds.LOGIN_NOTIFY: self.handle_login,
+            PacketIds.TOKEN_VALIDATE_REQ: self.validate_token,
+            PacketIds.GET_ACCOUNT_REQ: self.fetch_account,
+            # PacketIds.SERVER_MESSAGE_NOTIFY: ServerMessageEvent.invoke, # 暂时不实现事件
+        }
+        self.websocket_server = None # 初始化websocket_server为None
+        logger.info(f"Dispatch server 将在 {self.host}:{self.port} 启动")
 
-    def _register_default_handlers(self):
-        """注册默认消息处理器"""
-        self.register_handler(PacketIds.LoginNotify, self.handle_login)
-        self.register_handler(PacketIds.TokenValidateReq, self.validate_token)
-        self.register_handler(PacketIds.ServerMessageNotify, self.handle_server_message)
-        self.register_handler(PacketIds.GachaHistoryReq, self.fetch_gacha_history)
-        self.register_handler(PacketIds.GetAccountReq, self.fetch_account)
-        self.register_handler(PacketIds.GetPlayerFieldsReq, self.fetch_player_fields)
-        self.register_handler(PacketIds.GetPlayerByAccountReq, self.fetch_player_by_account)
-
-    async def handle_connection(self, websocket, path):
-        """处理新客户端连接
-        
-        Args:
-            websocket: 客户端WebSocket连接
-            path: 连接路径
-        """
-        client_id = path.lstrip('/')
-        self.clients[client_id] = websocket
-        logger.info(f"新客户端连接: {client_id} ")
-
+    async def start(self, stop_event: asyncio.Event):
         try:
-            async for message in websocket:
-                await self.handle_message(client_id, message)
-        except websockets.exceptions.ConnectionClosed:
-            logger.warning(f"客户端 {client_id} 断开连接")
+            # 尝试启动websocket服务器
+            self.websocket_server = await serve(self.handle_connection, self.host, self.port)
+            logger.info(f"Dispatch server 已在 {self.host}:{self.port} 启动")
+            # 添加端口监听状态检查
+            logger.info(f"端口 {self.port} 监听状态: {'成功' if self.websocket_server.sockets else '失败'}")
+            # 添加心跳检测
+            heartbeat_task = asyncio.create_task(self.heartbeat_check())
+            await stop_event.wait()  # 等待停止事件
+            logger.info("停止事件已触发，正在关闭Dispatch server...")
+            heartbeat_task.cancel() # 取消心跳任务
+        except asyncio.CancelledError:
+            logger.info("Dispatch server 任务被取消，正在关闭...")
+            if self.websocket_server:
+                logger.info("正在关闭websocket服务器...")
+                await self.websocket_server.close()
+                logger.info("Dispatch server 已关闭。")
+        except Exception as e:
+            logger.error(f"Dispatch server 启动或运行失败: {e} ")
+            raise
         finally:
-            self.clients.pop(client_id, None)
+            pass # 确保在任何情况下都尝试关闭websocket服务器，但已在CancelledError中处理
 
-    async def handle_message(self, client_id: str, message: bytes):
-        """处理客户端消息
-        
-        Args:
-            client_id: 客户端ID
-            message: 接收到的加密消息
-        """
+    async def heartbeat_check(self):
+        while True:
+            await asyncio.sleep(5)
+            logger.trace(f"Dispatch server 心跳检测: 运行中")
+
+    async def handle_connection(self, websocket):
+        logger.debug(f"Dispatch 客户端已连接：{websocket.remote_address} ")
+        try:
+            logger.debug(f"开始接收来自 {websocket.remote_address} 的消息...")
+            async for message in websocket:
+                logger.debug(f"收到来自 {websocket.remote_address} 的原始消息，长度：{len(message)} 字节")
+                await self.on_message(websocket, message)
+        except ConnectionClosedOK:
+            logger.debug(f"Dispatch 客户端已正常断开连接：{websocket.remote_address} ")
+        except Exception as e:
+            logger.error(f"处理客户端 {websocket.remote_address} 连接时发生错误：{e} ")
+            logger.error(f"错误详情：{type(e).__name__}, {str(e)}")
+
+    async def on_message(self, websocket, message):
+        logger.debug(f"收到来自 {websocket.remote_address} 的原始消息，长度：{len(message)} 字节")
         try:
             # 解密消息
-            decrypted = self._xor_decrypt(message)
-            data = json.loads(decrypted.decode())
+            logger.debug(f"开始使用密钥解密消息...")
+            decrypted_message = xor_crypt(message, Configuration.DISPATCH_INFO().encryptionKey)
+            logger.debug(f"解密后消息长度：{len(decrypted_message)} 字节")
             
-            packet_id = data.get("packetId")
+            # 解码为UTF-8字符串
+            try:
+                decoded_message = decrypted_message.decode('utf-8')
+            except UnicodeDecodeError:
+                # 如果UTF-8解码失败，尝试使用latin1编码
+                decoded_message = decrypted_message.decode('latin1')
+            logger.debug(f"解码后消息长度：{len(decoded_message)} 字符")
+            logger.debug(f"原始解码内容：{decoded_message[:100]}..." if len(decoded_message) > 100 else f"原始解码内容：{decoded_message}")
+
+            # 尝试解析为JSON对象
+            logger.debug(f"尝试解析消息为JSON...")
+            try:
+                json_message = json.loads(decoded_message)
+                logger.debug(f"成功解析为JSON对象，packetId: {json_message.get('packetId')}")
+            except json.JSONDecodeError:
+                logger.debug(f"首次JSON解析失败，尝试处理为字符串...")
+                # 如果是纯字符串，尝试去除引号和转义
+                if decoded_message.startswith('"') and decoded_message.endswith('"'):
+                    decoded_message = decoded_message[1:-1]
+                decoded_message = decoded_message.replace('"', '"').replace('\\', '')
+                logger.debug(f"处理后字符串内容：{decoded_message[:100]}..." if len(decoded_message) > 100 else f"处理后字符串内容：{decoded_message}")
+                json_message = json.loads(decoded_message)
+
+            packet_id = json_message.get("packetId")
+            data = json_message.get("message") # 与Java的encodeMessage对应
+
+            # 如果data是字符串，尝试再次解析为JSON对象
+            if isinstance(data, str):
+                try:
+                    data = json.loads(data)
+                except json.JSONDecodeError:
+                    logger.error(f"无法解析data字段为JSON：{data} ")
+                    return
+
+            # 检查客户端是否已认证，除了登录包
+            if packet_id != PacketIds.LOGIN_NOTIFY:
+                if not getattr(websocket, 'is_authenticated', False):
+                    logger.warning(f"收到来自未认证客户端的数据包ID：{packet_id} ")
+                    await websocket.close()
+                    return
+
             if packet_id in self.handlers:
-                await self.handlers[packet_id](client_id, data.get("message"))
-            
-            # 触发回调
-            if packet_id in self.callbacks:
-                for callback in self.callbacks[packet_id]:
-                    callback(data.get("message"))
-            
-            logger.debug(f"收到来自 {client_id} 的消息: {data}")
+                await self.handlers[packet_id](websocket, data)
+            else:
+                logger.warning(f"未知的数据包ID：{packet_id} ")
+        except json.JSONDecodeError:
+            logger.error(f"无法解析JSON消息：{message} ")
         except Exception as e:
-            logger.error(f"处理消息时出错: {e}")
+            logger.error(f"处理消息时发生错误：{e} ")
 
-    async def start(self):
-        """启动调度服务器"""
-        self.server = await websockets.serve(
-            self.handle_connection,
-            self.host,
-            self.port,
-            ssl=None  # 可以添加SSL配置
-        )
-        logger.success(f"调度服务器已启动在 {self.host}:{self.port}")
-        
-    def register_handler(self, packet_id: PacketIds, handler: Callable):
-        """注册消息处理器"""
-        self.handlers[packet_id] = handler
-        
-    def register_callback(self, packet_id: PacketIds, callback: Callable):
-        """注册消息回调"""
-        if packet_id not in self.callbacks:
-            self.callbacks[packet_id] = []
-        self.callbacks[packet_id].append(callback)
-        
-    async def handle_login(self, client_id: str, message: dict):
-        """处理登录通知"""
-        logger.info(f"客户端 {client_id} 登录: {message}")
-        
-    async def validate_token(self, client_id: str, message: dict):
-        """验证令牌"""
-        logger.info(f"客户端 {client_id} 验证令牌: {message}")
-        
-    async def handle_server_message(self, client_id: str, message: dict):
-        """处理服务器消息通知"""
-        logger.info(f"服务器消息通知: {message}")
-    
-    async def fetch_gacha_history(self, client_id: str, message: dict):
-        """处理抽卡历史请求
-        
-        Args:
-            client_id: 客户端ID
-            message: 请求消息，包含accountId、page和gachaType
-        """
-        account_id = message.get("accountId")
-        page = message.get("page", 1)
-        gacha_type = message.get("gachaType", 0)
-        
-        # 创建响应对象
-        response = {"retcode": 0, "records": []}
-        
-        
-        # 发送响应
-        await self.send_message(client_id, PacketIds.GachaHistoryRsp, response)
-        logger.info(f"已发送抽卡历史响应给客户端 {client_id}")
-    
-    async def fetch_account(self, client_id: str, message: dict):
-        """处理获取账号请求
-        
-        Args:
-            client_id: 客户端ID
-            message: 请求消息，包含accountId
-        """
-        account_id = message.get("accountId")
-        
-        account = {"id": account_id, "username": f"user_{account_id}", "token": ""}
-        
-        # 发送响应
-        await self.send_message(client_id, PacketIds.GetAccountRsp, account)
-        logger.info(f"已发送账号信息响应给客户端 {client_id}")
-    
-    async def fetch_player_fields(self, client_id: str, message: dict):
-        """处理获取玩家字段请求
-        
-        Args:
-            client_id: 客户端ID
-            message: 请求消息，包含playerId和fields
-        """
-        player_id = message.get("playerId")
-        fields = message.get("fields", [])
-        
-        player_data = {"playerId": player_id}
-        for field in fields:
-            player_data[field] = f"value_of_{field}"
-        
-        # 发送响应
-        await self.send_message(client_id, PacketIds.GetPlayerFieldsRsp, player_data)
-        logger.info(f"已发送玩家字段响应给客户端 {client_id}")
-    
-    async def fetch_player_by_account(self, client_id: str, message: dict):
-        """处理通过账号获取玩家请求
-        
-        Args:
-            client_id: 客户端ID
-            message: 请求消息，包含accountId和fields
-        """
-        account_id = message.get("accountId")
-        fields = message.get("fields", [])
-        
-        player_data = {"accountId": account_id, "playerId": 10001}
-        for field in fields:
-            player_data[field] = f"value_of_{field}"
-        
-        # 发送响应
-        await self.send_message(client_id, PacketIds.GetPlayerByAccountRsp, player_data)
-        logger.info(f"已发送通过账号获取玩家响应给客户端 {client_id}")
-    
-    def _xor_encrypt(self, data: bytes) -> bytes:
-        """简单的XOR加密"""
-        if not self.encryption_key:
-            return data
-        return bytes([b ^ self.encryption_key[i % len(self.encryption_key)] 
-                     for i, b in enumerate(data)])
-        
-    def _xor_decrypt(self, data: bytes) -> bytes:
-        """简单的XOR解密"""
-        return bytes([b ^ self.encryption_key[i % len(self.encryption_key)] 
-                     for i, b in enumerate(data)])
-    
-    def encode_message(self, packet_id: int, message):
-        """编码消息
-        
-        Args:
-            packet_id: 消息包ID
-            message: 消息内容
-            
-        Returns:
-            编码后的消息对象
-        """
-        server_message = {
-            "packetId": packet_id,
-            "message": json.dumps(message) if isinstance(message, (dict, list)) else message
-        }
-        return server_message
-    
-    async def send_message(self, client_id: str, packet_id: int, message):
-        """发送消息到客户端
-        
-        Args:
-            client_id: 客户端ID
-            packet_id: 消息包ID
-            message: 消息内容
-        """
-        if client_id in self.clients:
-            # 编码消息
-            encoded = self.encode_message(packet_id, message)
-            # 序列化为JSON
-            serialized = json.dumps(encoded).encode()
-            # 加密消息
-            encrypted = self._xor_encrypt(serialized)
-            # 发送消息
-            await self.clients[client_id].send(encrypted)
-            logger.debug(f"已发送消息到客户端 {client_id}: {packet_id} - {message}")
+    async def send_message(self, websocket, packet_id, data):
+        # 编码消息，与Java的encodeMessage对应
+        # Java的message字段是toJson(message)，所以这里也需要先dumps一次
+        message_obj = {"packetId": packet_id, "message": json.dumps(data, ensure_ascii=False)}
+        encoded_message = json.dumps(message_obj, ensure_ascii=False).encode('utf-8')
+        # 加密消息
+        encrypted_message = xor_crypt(encoded_message, Configuration.DISPATCH_INFO().encryptionKey)
+        await websocket.send(encrypted_message)
 
-    async def stop(self):
-        """停止调度服务器"""
-        if self.server:
-            self.server.close()
-            await self.server.wait_closed()
-            logger.info("调度服务器已停止")
+    async def handle_login(self, websocket, data):
+        logger.debug(f"处理登录请求，原始数据：{data}")
+        # Java的handleLogin中，data是getAsString().replaceAll("\"", ""), 所以这里也需要处理
+        dispatch_key = data.replace('"', '') if isinstance(data, str) else data
+        logger.debug(f"处理后Dispatch Key：{dispatch_key}")
+        logger.debug(f"配置中的Dispatch Key：{Configuration.DISPATCH_INFO().dispatchKey}")
+        
+        if dispatch_key == Configuration.DISPATCH_INFO().dispatchKey:
+            websocket.is_authenticated = True # 标记为已认证
+            logger.info(f"客户端 {websocket.remote_address} 登录成功")
+            logger.debug(f"已设置客户端 {websocket.remote_address} 为已认证状态")
+        else:
+            logger.warning(f"来自 {websocket.remote_address} 的 Dispatch 密钥无效")
+            logger.warning(f"提供的Key：{dispatch_key}，期望的Key：{Configuration.DISPATCH_INFO().dispatchKey}")
+            await websocket.close()
+            logger.debug(f"已关闭未通过认证的客户端 {websocket.remote_address} 的连接")
+
+    async def validate_token(self, websocket, data):
+        # 假设data是包含uid和token的字典
+        account_id = data.get("uid")
+        token = data.get("token")
+
+        from database import DatabaseHelper
+
+        account = DatabaseHelper.get_account_by_id(account_id)
+        valid = account is not None and account.get("token") == token
+        account_info = None
+        if valid:
+            account_info = account.copy()
+            account_info.pop('_id', None) # 移除MongoDB的_id字段
+            # 确保token字段名称正确，如果Java端是getToken()，这里可能需要调整
+            # account_info["token"] = account_info.pop("token", None) # 如果需要重命名token字段
+
+        response = {"valid": valid}
+        if valid:
+            response["account"] = account_info
+
+        await self.send_message(websocket, PacketIds.TOKEN_VALIDATE_RSP, response)
+
+    async def fetch_account(self, websocket, data):
+        # 假设data是包含accountId的字典
+        account_id = data.get("accountId")
+
+        from database import DatabaseHelper
+
+        account = DatabaseHelper.get_account_by_id(account_id)
+        account_info = None
+        if account:
+            account_info = account.copy()
+            account_info.pop('_id', None) # 移除MongoDB的_id字段
+
+        await self.send_message(websocket, PacketIds.GET_ACCOUNT_RSP, account_info)

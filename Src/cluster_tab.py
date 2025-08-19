@@ -344,6 +344,10 @@ class ClusterConfigDialog(QDialog):
             QMessageBox.warning(self, self.tr("错误"), self.tr("请指定一个调度服务器，或勾选\"使用内置调度\""))
             self.config_tabs.setCurrentIndex(0) # 切换到"调度"标签页
             return
+        
+        # 如果使用内置调度，清空 dispatch_servers 列表
+        if use_internal:
+            dispatch_servers = []
 
         # 3. 获取游戏服务器配置
         game_servers = [self.game_server_list.item(i).text() for i in range(self.game_server_list.count())]
@@ -596,21 +600,17 @@ class ClusterTab(QWidget):
 
             # 如果使用内置调度，所有服务器都标记为 GAME_ONLY
             if use_internal:
+                # 确保 dispatch_servers 为空
+                new_config['dispatch_servers'] = []
+                # 所有游戏服务器都标记为 GAME_ONLY
                 for server in game_servers:
                     self._update_server_role(server, 'GAME_ONLY', cluster_name)
-                # 如果有指定外部调度，也标记为 GAME_ONLY (因为内置优先)
-                for server in dispatch_servers:
-                     self._update_server_role(server, 'GAME_ONLY', cluster_name)
             else:
                 # 处理外部调度
                 for server in dispatch_servers:
-                    if server in game_servers:
-                        # 如果既是调度又是游戏，则为 HYBRID (虽然 Grasscutter 可能不支持，但逻辑上先这样处理)
-                        # 或者根据实际情况，可能优先标记为 DISPATCH
-                        self._update_server_role(server, 'DISPATCH_ONLY', cluster_name) # 优先标记为调度
-                    else:
-                        self._update_server_role(server, 'DISPATCH_ONLY', cluster_name)
-                # 处理纯游戏服务器
+                    # 调度服务器优先标记为 DISPATCH_ONLY
+                    self._update_server_role(server, 'DISPATCH_ONLY', cluster_name)
+                # 处理纯游戏服务器 (不在 dispatch_servers 中的游戏服务器)
                 for server in game_servers:
                     if server not in dispatch_servers:
                         self._update_server_role(server, 'GAME_ONLY', cluster_name)
