@@ -8,13 +8,58 @@ import zipfile
 import datetime
 import subprocess
 from loguru import logger
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
-from database_editor_dialog import DatabaseEditorDialog
+from PyQt5.QtCore import (Qt, QThread, pyqtSignal, QCoreApplication)
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QFileDialog, QMessageBox, QSpacerItem, QSizePolicy
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
+    QFileDialog, QMessageBox, QSpacerItem, QSizePolicy, QTextEdit
 )
+from database_editor_dialog import DatabaseEditorDialog
+
+class LogReaderThread(QThread):
+    log_data_ready = pyqtSignal(str)
+    log_error = pyqtSignal(str)
+
+    def __init__(self, log_path, parent=None):
+        super().__init__(parent)
+        self.log_path = log_path
+        self._running = True
+
+    def tr(self, text):
+        return QCoreApplication.translate("LogReaderThread", text)
+
+    def run(self):
+        try:
+            while self._running:
+                try:
+                    # 确保日志文件存在
+                    if not os.path.exists(self.log_path):
+                        self.log_error.emit(self.tr(f"日志文件不存在: {self.log_path}"))
+                        time.sleep(1) # 等待1秒后重试
+                        continue
+
+                    # 尝试打开文件并持续读取
+                    with open(self.log_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        # 移动到文件末尾
+                        f.seek(0, os.SEEK_END)
+                        while self._running:
+                            line = f.readline()
+                            if line:
+                                self.log_data_ready.emit(line)
+                                logger.debug(f"LogReaderThread: {line.strip()}")
+                            else:
+                                # 文件末尾，等待新内容
+                                time.sleep(0.1) # 避免CPU占用过高
+                except Exception as e:
+                    self.log_error.emit(self.tr(f"读取日志文件时发生错误: {e}"))
+                    logger.exception(self.tr("LogReaderThread - 读取日志文件时发生错误"))
+                    time.sleep(1) # 发生错误时等待1秒后重试
+        except Exception as e:
+            self.log_error.emit(self.tr(f"LogReaderThread 线程运行时发生错误: {e}"))
+            logger.exception(self.tr("LogReaderThread - 线程运行时发生错误"))
+
+    def stop(self):
+        self._running = False
+        self.wait()
 
 class DatabaseTab(QWidget):
     def __init__(self, parent=None):
@@ -25,10 +70,19 @@ class DatabaseTab(QWidget):
         # 主布局
         main_layout = QVBoxLayout(self)
 
-        # 提示标签
-        self.info_label = QLabel(self.tr("在这里管理你的数据库"), self)
-        self.info_label.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(self.info_label)
+        # 日志控制台
+        self.log_text = QTextEdit(self)
+        self.log_text.setReadOnly(True)
+        self.log_text.setLineWrapMode(QTextEdit.WidgetWidth)
+        self.log_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        main_layout.addWidget(self.log_text)
+        
+        # 初始化日志线程
+        self.log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Database', 'mongod.log')
+        self.log_reader = LogReaderThread(self.log_path)
+        self.log_reader.log_data_ready.connect(self.append_log)
+        self.log_reader.log_error.connect(self.handle_log_error)
+        self.log_reader.start()
 
         # 按钮行布局
         button_layout = QHBoxLayout()
@@ -58,6 +112,18 @@ class DatabaseTab(QWidget):
 
         self.setLayout(main_layout)
         logger.info(self.tr("数据库管理标签页初始化完成"))
+
+    def append_log(self, text):
+        self.log_text.append(text.strip())
+
+    def handle_log_error(self, error_message):
+        logger.error(self.tr(f"日志读取错误: {error_message}"))
+        self.log_text.append(self.tr(f"[错误] 日志读取错误: {error_message}"))
+
+    def closeEvent(self, event):
+        if hasattr(self, 'log_reader') and self.log_reader.isRunning():
+            self.log_reader.stop()
+        super().closeEvent(event)
 
     def clear_database(self):
         # 警告用户
