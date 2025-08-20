@@ -71,7 +71,7 @@ jobs:
          git config user.name "github-actions[bot]"
          git config user.email "github-actions[bot]@users.noreply.github.com"
          git tag ${{ steps.version.outputs.new_tag }}
-         git push http://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${GITHUB_REPOSITORY} ${{ steps.version.outputs.new_tag }}
+         git push https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${GITHUB_REPOSITORY} ${{ steps.version.outputs.new_tag }}
       - name: 生成更改日志/Generate Changelog
         id: changelog
         shell: bash
