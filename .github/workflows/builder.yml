@@ -26,18 +26,20 @@ jobs:
         run: |
           python -m PyInstaller .\build.spec --noconfirm
       - name: 上传应用程序/Upload the .exe file
-        uses: actions/upload-artifact@v3.0
+        uses: actions/upload-artifact@v4
         with:
           name: JimGrasscutterServerLauncher.exe
           path: dist/JimGrasscutterServerLauncher.exe
       - name: 获取最新的Tag/Get latest tag
         id: get_tag
+        shell: bash
         run: |
           tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "V0.0.0")
           echo "Last tag: $tag"
           echo "tag=$tag" >> $GITHUB_OUTPUT
       - name: 生成版本号/Calculate version
         id: version
+        shell: bash
         run: |
           last_tag="${{ steps.get_tag.outputs.tag }}"
           run_number=${{ github.run_number }}
@@ -62,6 +64,7 @@ jobs:
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
       - name: 创建新的Tag/Create tag
         if: steps.version.outputs.skip_release != 'true'
+        shell: bash
         run: |
          git config user.name github-actions
          git config user.email github-actions@github.com
@@ -69,6 +72,7 @@ jobs:
          git push origin ${{ steps.version.outputs.new_tag }}
       - name: 生成更改日志/Generate Changelog
         id: changelog
+        shell: bash
         run: |
           last_tag=${{ steps.get_tag.outputs.tag }}
           log=$(git log "$last_tag"..HEAD --pretty=format:"- %s")
