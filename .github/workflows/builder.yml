@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: 正在进入分支/Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: 安装python环境/Install Python
         uses: actions/setup-python@v5
         with:
