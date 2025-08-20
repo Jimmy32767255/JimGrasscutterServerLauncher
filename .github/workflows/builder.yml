@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
       - name: 安装python环境/Install Python
         uses: actions/setup-python@v5
         with:
@@ -79,15 +80,17 @@ jobs:
         id: changelog
         shell: bash
         run: |
-          last_tag=${{ steps.get_tag.outputs.tag }}
-          log=$(git log "$last_tag"..HEAD --pretty=format:"- %s")
+          git fetch --tags
+          last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$last_tag" ]; then
+            echo "没有找到任何 tag，生成全部提交日志"
+            log=$(git log --pretty=format:"- %s")
+          else
+            log=$(git log "$last_tag"..HEAD --pretty=format:"- %s")
+          fi
           if [ -z "$log" ]; then
-            echo 没有生成更改日志，请在控制台手动编写[支持MD语法]
-            log="${{ github.event.inputs.changelog }}"
-            if [ -z "$log" ]; then
-              echo "未手动填写 changelog，设置为默认提示"
-              log="没有发现新更改/No significant changes."
-            fi
+            echo "没有生成更改日志，请在控制台手动编写[支持MD语法]"
+            log="没有发现新更改/No significant changes."
           fi
           echo "$log" > changelog.txt
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
