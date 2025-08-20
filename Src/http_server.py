@@ -5,22 +5,22 @@ import base64
 from aiohttp import web
 from loguru import logger
 from typing import Dict, List, Any
-from .dispatch_config import ServerConfig
+from .dispatch_config import Configuration
 
 class HttpServer:
     """HTTP服务器实现
     
     负责处理HTTP请求，包括认证和地区查询等
     """
-    def __init__(self, config: ServerConfig):
+    def __init__(self, config: Configuration):
         self.config = config
-        self.host = config.host
-        self.port = config.http_port
+        self.host = config.DISPATCH_INFO().bindAddress
+        self.port = config.DISPATCH_INFO().bindPort
         self.app = web.Application()
         self.runner = None
         self.site = None
         self.dispatch_seed = os.urandom(4096)
-        self.dispatch_key = config.encryption_key.encode()
+        self.dispatch_key = config.DISPATCH_INFO().encryptionKey.encode()
         self.regions = {}
         self.region_list_response = ""
         self.region_list_response_cn = ""

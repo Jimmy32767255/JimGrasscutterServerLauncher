@@ -4,13 +4,15 @@ import shutil
 import psutil
 from pathlib import Path
 from loguru import logger
-from config_editor import ConfigEditorDialog
+from json_editor import JSONEditor as ConfigEditorDialog
 from plugin_manager import PluginManagerDialog
+import os
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QInputDialog,
     QDialog, QFormLayout, QLineEdit, QFileDialog, QMessageBox, QProgressDialog
 )
+from utils import BASE_PATH
 
 class InstanceConfigDialog(QDialog):
     def __init__(self, parent=None, config=None, root_dir=None):
@@ -61,7 +63,7 @@ class InstanceConfigDialog(QDialog):
 
     def load_global_config(self):
         logger.info(self.tr('加载全局配置'))
-        global_config_path = os.path.join(self.root_dir, 'Config', 'JGSL.json')
+        global_config_path = os.path.join(BASE_PATH, 'Config', 'JGSL.json')
         if os.path.exists(global_config_path):
             with open(global_config_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -118,7 +120,7 @@ class ManageTab(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("background-color: rgba(255, 255, 255, 0.01);")  # 设置背景透明 
-        self.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        self.root_dir = BASE_PATH
         self.server_list = QListWidget()
         self.create_btn = QPushButton(self.tr('新建实例'))
         self.edit_config_btn = QPushButton(self.tr('编辑Grasscutter配置文件'))
@@ -377,8 +379,8 @@ class ManageTab(QWidget):
         if not os.path.exists(config_path):
             QMessageBox.warning(self, self.tr('错误'), self.tr('config.json不存在'))
             return
-        config_editor = ConfigEditorDialog(self, config_path)
-        config_editor.exec_()
+        self.config_editor = ConfigEditorDialog(config_path)
+        self.config_editor.show()
 
     def edit_instance(self):
         current_item = self.server_list.currentItem()

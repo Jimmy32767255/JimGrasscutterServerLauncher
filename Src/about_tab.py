@@ -1,7 +1,9 @@
+import os
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices, QIcon
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
+from utils import BASE_PATH
 
 
 class AboutTab(QWidget):
@@ -27,13 +29,13 @@ class AboutTab(QWidget):
         # 项目链接
         layout.addStretch(1)
         self.add_link(layout,
-                    QIcon('Assets/JGSL-Logo.ico'),
+                    QIcon(os.path.join(BASE_PATH, 'Assets', 'JGSL-Logo.ico')),
                     self.tr('本项目GitHub仓库'),
                     'https://github.com/Jimmy32767255/JimGrasscutterServerLauncher')
 
         # Grasscutter链接
         self.add_link(layout,
-                    QIcon('Assets/Grasscutter-Logo.ico'),
+                    QIcon(os.path.join(BASE_PATH, 'Assets', 'Grasscutter-Logo.ico')),
                     self.tr('Grasscutter项目'),
                     'https://github.com/Grasscutters/Grasscutter')
 

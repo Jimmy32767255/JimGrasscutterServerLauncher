@@ -6,6 +6,7 @@ from loguru import logger
 from port_checker import check_ports
 from PyQt5.QtCore import QProcess, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox
+from utils import BASE_PATH
 
 class LaunchTab(QWidget):
     instance_started = pyqtSignal(str, int)
@@ -18,7 +19,7 @@ class LaunchTab(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("background-color: rgba(255, 255, 255, 0.01);")  # 设置背景透明
-        self.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        self.root_dir = BASE_PATH
         self.running_instances = {} # 存储所有正在运行的实例 {instance_name: {'process': QProcess, 'pid': int, 'instance_dir': Path}}
         self.db_process = QProcess()
         self.instance_counter = 0
@@ -105,12 +106,14 @@ class LaunchTab(QWidget):
             config_path = instance_dir / 'config.json'
             dispatch_port = None
             game_port = None
+            run_mode = None # 新增run_mode变量
             if config_path.exists():
                 try:
                     with open(config_path, 'r', encoding='utf-8') as f:
                         gc_config = json.load(f)
                     dispatch_port = gc_config.get('server', {}).get('http', {}).get('bindPort')
                     game_port = gc_config.get('server', {}).get('game', {}).get('bindPort')
+                    run_mode = gc_config.get('server', {}).get('runMode') # 读取runMode
                     if not all([dispatch_port, game_port]):
                         logger.warning(self.tr('Grasscutter配置文件缺少端口配置，将尝试使用默认端口或跳过端口检查。'))
                 except Exception as e:
@@ -128,7 +131,7 @@ class LaunchTab(QWidget):
 
             # 只有当端口有效时才进行端口检查
             if dispatch_port and game_port:
-                port_results = check_ports([(27017, 'tcp'), (dispatch_port, 'tcp'), (game_port, 'udp')])
+                port_results = check_ports([(27017, 'tcp'), (dispatch_port, 'tcp'), (game_port, 'udp')], run_mode=run_mode, dispatch_port=dispatch_port, game_port=game_port)
                 for port, proto, occupied, info in port_results:
                     if occupied:
                         logger.error(self.tr(f'端口 {port}/{proto} 被进程占用: {info}'))

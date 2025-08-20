@@ -1,4 +1,5 @@
 from loguru import logger
+import os
 from PyQt5.QtGui import QIcon
 from about_tab import AboutTab
 from manage_tab import ManageTab
@@ -14,6 +15,7 @@ from fe_core.blur_style import apply_blur_style, BLUR_STYLE
 from fe_core.custom_title_bar import CustomTitleBar
 from fe_core.background_effect import BackgroundEffect
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QWidget, QVBoxLayout, QApplication
+from utils import BASE_PATH
 
 class MainWindow(QMainWindow):
     def __init__(self, theme_manager):
@@ -39,7 +41,7 @@ class MainWindow(QMainWindow):
         self.running_processes: dict[int, QProcess] = {}
 
         # 创建自定义标题栏
-        self.title_bar = CustomTitleBar(self, window_title=self.tr('JimGrasscutterServerLauncher'), window_icon_path='Assets/JGSL-Logo.ico')
+        self.title_bar = CustomTitleBar(self, window_title=self.tr('JimGrasscutterServerLauncher'), window_icon_path=os.path.join(BASE_PATH, 'Assets', 'JGSL-Logo.ico'))
 
         # 创建选项卡
         self.tabs = QTabWidget()

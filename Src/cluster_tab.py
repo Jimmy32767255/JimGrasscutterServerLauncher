@@ -1,8 +1,10 @@
 import os
 import re
 import json
+import os
 from PyQt5 import QtCore
 from loguru import logger
+from utils import BASE_PATH
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QListWidget, QTabWidget, QCheckBox, QLineEdit, QListWidgetItem, 
@@ -135,8 +137,8 @@ class ClusterConfigDialog(QDialog):
 
         # 存储服务器配置的地方
         self.server_configs = {}
-        self.root_dir = parent.root_dir if parent and hasattr(parent, 'root_dir') else os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.cluster_config_path = os.path.join(self.root_dir, 'Config', 'cluster-list.json')
+        self.root_dir = BASE_PATH
+        self.cluster_config_path = os.path.join(BASE_PATH, 'Config', 'cluster-list.json')
         # 加载可用服务器列表 (示例)
         self.load_available_servers()
         # 当标签页内的列表变化时，更新游戏服务器计数
@@ -303,7 +305,7 @@ class ClusterConfigDialog(QDialog):
         
     def open_title_config(self):
         """打开标题配置对话框"""
-        from config_editor import ConfigEditorDialog
+        from json_editor import JSONEditor as ConfigEditorDialog
         
         # 获取当前选中的游戏服务器
         selected_items = self.game_server_list.selectedItems()
@@ -315,8 +317,8 @@ class ClusterConfigDialog(QDialog):
         
         # 创建并显示配置编辑器对话框
         config_path = os.path.join("Servers", server_name, "JGSL", "Config.json")
-        dialog = ConfigEditorDialog(self, config_path)
-        dialog.exec_()
+        dialog = ConfigEditorDialog(config_path)
+        dialog.show()
 
     def accept(self):
         """处理确定按钮点击事件，保存集群配置"""
@@ -344,6 +346,10 @@ class ClusterConfigDialog(QDialog):
             QMessageBox.warning(self, self.tr("错误"), self.tr("请指定一个调度服务器，或勾选\"使用内置调度\""))
             self.config_tabs.setCurrentIndex(0) # 切换到"调度"标签页
             return
+        
+        # 如果使用内置调度，清空 dispatch_servers 列表
+        if use_internal:
+            dispatch_servers = []
 
         # 3. 获取游戏服务器配置
         game_servers = [self.game_server_list.item(i).text() for i in range(self.game_server_list.count())]
@@ -596,21 +602,17 @@ class ClusterTab(QWidget):
 
             # 如果使用内置调度，所有服务器都标记为 GAME_ONLY
             if use_internal:
+                # 确保 dispatch_servers 为空
+                new_config['dispatch_servers'] = []
+                # 所有游戏服务器都标记为 GAME_ONLY
                 for server in game_servers:
                     self._update_server_role(server, 'GAME_ONLY', cluster_name)
-                # 如果有指定外部调度，也标记为 GAME_ONLY (因为内置优先)
-                for server in dispatch_servers:
-                     self._update_server_role(server, 'GAME_ONLY', cluster_name)
             else:
                 # 处理外部调度
                 for server in dispatch_servers:
-                    if server in game_servers:
-                        # 如果既是调度又是游戏，则为 HYBRID (虽然 Grasscutter 可能不支持，但逻辑上先这样处理)
-                        # 或者根据实际情况，可能优先标记为 DISPATCH
-                        self._update_server_role(server, 'DISPATCH_ONLY', cluster_name) # 优先标记为调度
-                    else:
-                        self._update_server_role(server, 'DISPATCH_ONLY', cluster_name)
-                # 处理纯游戏服务器
+                    # 调度服务器优先标记为 DISPATCH_ONLY
+                    self._update_server_role(server, 'DISPATCH_ONLY', cluster_name)
+                # 处理纯游戏服务器 (不在 dispatch_servers 中的游戏服务器)
                 for server in game_servers:
                     if server not in dispatch_servers:
                         self._update_server_role(server, 'GAME_ONLY', cluster_name)
