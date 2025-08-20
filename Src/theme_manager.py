@@ -1,10 +1,13 @@
 import os
+import sys
 import json
 from loguru import logger
 from PyQt5.QtWidgets import QComboBox, QLabel, QTabWidget
 from fe_core.blur_style import BLUR_STYLE
+from utils import get_base_path
 
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+BASE_PATH = get_base_path()
+CONFIG_FILE = os.path.join(BASE_PATH, 'Config', 'config.json')
 
 class ThemeManager:
     def __init__(self, tr_func):
@@ -17,7 +20,7 @@ class ThemeManager:
 
 
     def load_themes(self):
-        themes_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Themes')
+        themes_dir = os.path.join(BASE_PATH, 'Themes')
         self.theme_map = {}
         for theme_name in os.listdir(themes_dir):
             theme_path = os.path.join(themes_dir, theme_name)
@@ -75,9 +78,9 @@ class ThemeManager:
             background_image_enabled = theme_config.get('background_image', False)
             if background_image_enabled:
                 # 尝试加载 background.png
-                image_path_png = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Themes', theme_key, "background.png")
+                image_path_png = os.path.join(BASE_PATH, 'Themes', theme_key, "background.png")
                 # 尝试加载 background.jpg
-                image_path_jpg = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Themes', theme_key, "background.jpg")
+                image_path_jpg = os.path.join(BASE_PATH, 'Themes', theme_key, "background.jpg")
 
                 image_to_load = None
                 if os.path.exists(image_path_png):
@@ -147,7 +150,7 @@ class ThemeManager:
 
 
         # 从配置文件加载主题设置并应用
-        config_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+        config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
         theme_key = 'FaceEngineering' # 默认主题
         try:
             if os.path.exists(config_file):

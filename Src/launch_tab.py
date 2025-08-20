@@ -6,6 +6,7 @@ from loguru import logger
 from port_checker import check_ports
 from PyQt5.QtCore import QProcess, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox
+from utils import BASE_PATH
 
 class LaunchTab(QWidget):
     instance_started = pyqtSignal(str, int)
@@ -18,7 +19,7 @@ class LaunchTab(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("background-color: rgba(255, 255, 255, 0.01);")  # 设置背景透明
-        self.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        self.root_dir = BASE_PATH
         self.running_instances = {} # 存储所有正在运行的实例 {instance_name: {'process': QProcess, 'pid': int, 'instance_dir': Path}}
         self.db_process = QProcess()
         self.instance_counter = 0

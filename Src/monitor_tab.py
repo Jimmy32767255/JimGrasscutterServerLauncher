@@ -8,10 +8,12 @@ import threading
 import qdarkstyle
 from loguru import logger
 from PyQt5.QtGui import QPainter, QColor, QFont, QPen, QTextCursor
+import os
 from PyQt5.QtCore import (
     Qt, QTimer, QRect, QPropertyAnimation,
     pyqtProperty, QEasingCurve, QThread, pyqtSignal, QProcess, QCoreApplication
 )
+from utils import BASE_PATH
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton,
     QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog, QListWidgetItem
@@ -189,7 +191,7 @@ class MonitorPanel(QDialog):
             self.start_time = None # 初始化启动时间
 
             # 应用主题设置
-            config_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+            config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
             try:
                 if os.path.exists(config_file):
                     with open(config_file, 'r', encoding='utf-8') as f:

@@ -127,8 +127,9 @@ class ActivityTab(QWidget):
         self.setLayout(main_layout)
 
     def load_repo_list(self):
-        repo_list_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'repo-list.json')
-        config_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+        from utils import BASE_PATH
+        repo_list_file = os.path.join(BASE_PATH, 'Config', 'repo-list.json')
+        config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
         try:
             if os.path.exists(repo_list_file):
                 with open(repo_list_file, 'r', encoding='utf-8') as f:

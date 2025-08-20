@@ -1,8 +1,10 @@
 import os
 import re
 import json
+import os
 from PyQt5 import QtCore
 from loguru import logger
+from utils import BASE_PATH
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QListWidget, QTabWidget, QCheckBox, QLineEdit, QListWidgetItem, 
@@ -135,8 +137,8 @@ class ClusterConfigDialog(QDialog):
 
         # 存储服务器配置的地方
         self.server_configs = {}
-        self.root_dir = parent.root_dir if parent and hasattr(parent, 'root_dir') else os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.cluster_config_path = os.path.join(self.root_dir, 'Config', 'cluster-list.json')
+        self.root_dir = BASE_PATH
+        self.cluster_config_path = os.path.join(BASE_PATH, 'Config', 'cluster-list.json')
         # 加载可用服务器列表 (示例)
         self.load_available_servers()
         # 当标签页内的列表变化时，更新游戏服务器计数

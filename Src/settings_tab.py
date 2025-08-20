@@ -1,5 +1,6 @@
 import os
 import json
+import os
 from loguru import logger
 from monitor_tab import MonitorPanel
 from fe_core.blur_style import BLUR_STYLE
@@ -9,8 +10,10 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QCheckBox, QComboBox, QLabel,
     QPushButton, QSpinBox, QHBoxLayout,QSpacerItem,QSizePolicy
 )
+from utils import get_base_path
 
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+BASE_PATH = get_base_path()
+CONFIG_FILE = os.path.join(BASE_PATH, 'Config', 'config.json')
 
 class SettingsTab(QWidget):
     def __init__(self, main_window_instance):
@@ -72,33 +75,25 @@ class SettingsTab(QWidget):
         self.debug_monitor_btn.clicked.connect(self.open_debug_monitor_panel)
 
     def load_settings(self):
+        config_data = {}
         try:
             if not os.path.exists(CONFIG_FILE):
                 logger.warning(self.tr(f'配置文件 {CONFIG_FILE} 不存在，将使用默认设置'))
-                theme = 'FaceEngineering'
-                lang = 'zh_CN'
-                auto_update = True
-                max_log_lines = 100
             else:
                 with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
                     config_data = json.load(f)
 
-                theme = config_data.get('Theme', 'FaceEngineering')
-                logger.debug(self.tr(f'加载主题设置 {theme}'))
-                lang = config_data.get('Language', 'zh_CN')
-                auto_update = config_data.get('AutoUpdate', True)
-                max_log_lines = config_data.get('MaxLogLines', 100)
-                self.max_log_spin.setValue(max_log_lines)
-
         except (FileNotFoundError, json.JSONDecodeError, Exception) as e:
             logger.error(self.tr(f'加载设置时出错: {e}，将使用默认设置'))
-            theme = 'FaceEngineering'
-            lang = 'zh_CN'
-            auto_update = True
-            max_log_lines = 100
-            self.max_log_spin.setValue(max_log_lines)
 
-        theme = self.theme_manager.load_theme_setting(config_data)
+        theme = config_data.get('Theme', 'FaceEngineering')
+        logger.debug(self.tr(f'加载主题设置 {theme}'))
+        lang = config_data.get('Language', 'zh_CN')
+        auto_update = config_data.get('AutoUpdate', True)
+        max_log_lines = config_data.get('MaxLogLines', 100)
+
+        self.max_log_spin.setValue(max_log_lines)
+        self.theme_manager.load_theme_setting(config_data)
         self.lang_combo.setCurrentText(self.tr('简体中文') if lang == 'zh_CN' else self.tr('English'))
         self.auto_update.setChecked(auto_update)
 

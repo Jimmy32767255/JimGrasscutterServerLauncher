@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import shutil
 import zipfile
@@ -12,6 +13,9 @@ from PyQt5.QtWidgets import (
     QSlider, QHBoxLayout, QDialog, QDialogButtonBox, QMessageBox, QTreeWidget,
     QTreeWidgetItem,QSpacerItem,QSizePolicy,QComboBox
 )
+from utils import get_base_path
+
+BASE_PATH = get_base_path()
 
 class DownloadThread(QThread):
     progress_signal = pyqtSignal(int)
@@ -77,8 +81,8 @@ class InstanceSelectionDialog(QDialog):
         self.setLayout(layout)
         
     def refresh_instances(self):
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        servers_path = os.path.join(root_dir, 'Servers')
+        # root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        servers_path = os.path.join(BASE_PATH, 'Servers')
         valid_servers = [
             name for name in os.listdir(servers_path)
             if os.path.isdir(os.path.join(servers_path, name)) 
@@ -90,7 +94,7 @@ class InstanceSelectionDialog(QDialog):
 class DownloadTab(QWidget):
     def __init__(self):
         super().__init__()
-        self.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        self.root_dir = BASE_PATH
         self.setStyleSheet("background-color: rgba(255, 255, 255, 0.01);")  # 设置背景透明
         self.logger = logger
         self.current_instance = None

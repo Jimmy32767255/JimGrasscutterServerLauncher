@@ -3,12 +3,18 @@ import sys
 import json
 import signal
 import webbrowser
+import os
 from loguru import logger
 from PyQt5.QtCore import Qt, QTranslator
 from main_window import MainWindow
 from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from update_checker import UpdateCheckThread, VERSION
+from utils import get_base_path
+
+# 切换工作目录到基础路径
+BASE_PATH = get_base_path()
+os.chdir(BASE_PATH)
 
 # 全局翻译器实例
 g_translator = None
@@ -78,7 +84,7 @@ def load_translator(app):
         app.removeTranslator(g_translator)
         g_translator = None
 
-    config_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+    config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
     lang = 'zh_CN' # 默认语言
     try:
         if os.path.exists(config_file):
@@ -90,7 +96,7 @@ def load_translator(app):
 
     translator = QTranslator()
     # 假设翻译文件在 Translations 目录下，命名为 JimGrasscutterServerLauncher_xx_YY.qm
-    qm_file = os.path.join(os.path.dirname(__file__), '..', 'Translations', f'JimGrasscutterServerLauncher_{lang}.qm')
+    qm_file = os.path.join(BASE_PATH, 'Translations', f'JimGrasscutterServerLauncher_{lang}.qm')
     
     if translator.load(qm_file):
         app.installTranslator(translator)
@@ -101,7 +107,7 @@ def load_translator(app):
 
 def check_for_updates_on_startup():
     # 读取配置文件检查是否启用自动更新
-    config_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Config', 'config.json')
+    config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
     try:
         if os.path.exists(config_file):
             with open(config_file, 'r', encoding='utf-8') as f:

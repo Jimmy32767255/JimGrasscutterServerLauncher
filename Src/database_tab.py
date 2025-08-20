@@ -8,11 +8,13 @@ import zipfile
 import datetime
 import subprocess
 from loguru import logger
+import os
 from PyQt5.QtCore import (Qt, QThread, pyqtSignal, QCoreApplication)
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QFileDialog, QMessageBox, QSpacerItem, QSizePolicy, QTextEdit
 )
+from utils import BASE_PATH
 from database_editor_dialog import DatabaseEditorDialog
 
 class LogReaderThread(QThread):
@@ -78,7 +80,7 @@ class DatabaseTab(QWidget):
         main_layout.addWidget(self.log_text)
         
         # 初始化日志线程
-        self.log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Database', 'mongod.log')
+        self.log_path = os.path.join(BASE_PATH, 'Database', 'mongod.log')
         self.log_reader = LogReaderThread(self.log_path)
         self.log_reader.log_data_ready.connect(self.append_log)
         self.log_reader.log_error.connect(self.handle_log_error)
@@ -138,7 +140,7 @@ class DatabaseTab(QWidget):
             self.stop_database_service()
             
             # 删除 Database/Data 目录
-            data_path = os.path.join(os.getcwd(), "Database", "Data")
+            data_path = os.path.join(BASE_PATH, "Database", "Data")
             if os.path.exists(data_path):
                 shutil.rmtree(data_path)
                 os.makedirs(data_path)
@@ -151,7 +153,7 @@ class DatabaseTab(QWidget):
 
     def export_database(self):
         # 实现导出数据库的逻辑
-        database_path = os.path.join(os.getcwd(), "Database", "Data") # 获取 Database/Data 文件夹的绝对路径
+        database_path = os.path.join(BASE_PATH, "Database", "Data") # 获取 Database/Data 文件夹的绝对路径
         if not os.path.exists(database_path) or not os.path.isdir(database_path):
             logger.warning(self.tr(f"数据库文件夹 {database_path} 不存在或不是一个目录"))
             QMessageBox.warning(self, self.tr("错误"), self.tr(f"数据库文件夹不存在\n路径:{database_path}"))
@@ -189,7 +191,7 @@ class DatabaseTab(QWidget):
         logger.info(self.tr("开始导入数据库操作"))
         
         # 获取数据库目录路径
-        database_path = os.path.join(os.getcwd(), "Database", "Data")
+        database_path = os.path.join(BASE_PATH, "Database", "Data")
         if not os.path.exists(os.path.dirname(database_path)):
             os.makedirs(os.path.dirname(database_path))
         
