@@ -1,5 +1,0 @@
-[submodule "Src/fe_core"]
-	path = Src/fe_core
-	url = https://github.com/Jimmy32767255/FE-Core
-	active = true
-	shallow = true

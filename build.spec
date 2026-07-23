@@ -4,7 +4,7 @@ block_cipher = None
 
 a = Analysis(
     [r'Src\main.py'],
-    pathex=['.', './fe_core'],
+    pathex=['.'],
     binaries=[],
     datas=[],
     hiddenimports=[
@@ -13,7 +13,6 @@ a = Analysis(
         'qdarkstyle',
         'requests',
         'websockets',
-        'fe_core',
         'pymongo'
     ],
     hookspath=[],

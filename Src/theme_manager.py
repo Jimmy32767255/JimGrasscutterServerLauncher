@@ -1,9 +1,7 @@
 import os
-import sys
 import json
 from loguru import logger
-from PyQt5.QtWidgets import QComboBox, QLabel, QTabWidget
-from fe_core.blur_style import BLUR_STYLE
+from PyQt5.QtWidgets import QComboBox, QLabel
 from utils import get_base_path
 
 BASE_PATH = get_base_path()
@@ -49,7 +47,7 @@ class ThemeManager:
         return index if index != -1 else 0 # 回退到第一个主题
 
     def load_theme_setting(self, config_data):
-        theme_key = config_data.get('Theme', 'FaceEngineering') # 默认使用 FaceEngineering
+        theme_key = config_data.get('Theme', 'ModernDark') # 默认使用 ModernDark
         logger.debug(self.tr(f'加载主题设置 {theme_key}'))
         index = self._find_theme_index(theme_key)
         self.theme_combo.setCurrentIndex(index)
@@ -95,48 +93,7 @@ class ThemeManager:
                     style_sheet.append('background-position: center;')
                     style_sheet.append('background-size: contain;')
 
-            if style_sheet:
-                # 分离背景图片样式
-                main_window_style = []
-                widget_style = []
-                for style_line in style_sheet:
-                    if 'background-image' in style_line or 'background-repeat' in style_line or 'background-position' in style_line or 'background-size' in style_line:
-                        main_window_style.append(style_line)
-                    else:
-                        widget_style.append(style_line)
-
-                # 合并所有样式并应用到主窗口
-                full_style_sheet = ' '.join(main_window_style + widget_style)
-                self.parent_widget.setStyleSheet(full_style_sheet);
-
-                # 如果启用了模糊，调用 MainWindow 的方法来处理模糊效果。
-                # 如果没有启用模糊，确保移除模糊效果。
-                self.parent_widget.apply_theme_effects(theme_config);
-
-                # 特别处理 QTabWidget 的背景透明
-                for widget in self.parent_widget.findChildren(QTabWidget):
-                    widget.setStyleSheet(widget.styleSheet() + f"""
-                        QTabWidget::pane {{
-                            background-color: transparent;
-                        }}
-                    """)
-                    # 为 QTabWidget 的标签栏设置样式
-                    widget.tabBar().setStyleSheet(widget.tabBar().styleSheet() + f"""
-                        QTabBar::tab {{
-                            background-color: transparent;
-                        }}
-                        QTabBar::tab:selected {{
-                            background-color: transparent;
-                        }}
-                    """)
-            else:
-                # 清除所有样式
-                self.parent_widget.setStyleSheet('')
-                # 特别处理 QTabWidget 的背景透明
-                for widget in self.parent_widget.findChildren(QTabWidget):
-                    widget.setStyleSheet("QTabWidget::pane { background-color: transparent; }")
-                    widget.tabBar().setStyleSheet("QTabBar::tab { background-color: transparent; } QTabBar::tab:selected { background-color: transparent; }")
-
+            self.parent_widget.setStyleSheet(' '.join(style_sheet))
             logger.debug(self.tr(f'应用主题: {theme_key} '))
         except Exception as e:
             logger.error(self.tr(f'应用主题时出错: {e}'))
@@ -151,14 +108,14 @@ class ThemeManager:
 
         # 从配置文件加载主题设置并应用
         config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
-        theme_key = 'FaceEngineering' # 默认主题
+        theme_key = 'ModernDark' # 默认主题
         try:
             if os.path.exists(config_file):
                 with open(config_file, 'r', encoding='utf-8') as f:
                     config_data = json.load(f)
-                theme_key = config_data.get('Theme', 'FaceEngineering')
+                theme_key = config_data.get('Theme', 'ModernDark')
         except Exception as e:
-            logger.warning(self.tr(f"读取配置文件时出错，使用默认主题FaceEngineering: {e}"))
+            logger.warning(self.tr(f"读取配置文件时出错，使用默认主题ModernDark: {e}"))
 
         index = self._find_theme_index(theme_key)
         self.theme_combo.setCurrentIndex(index)

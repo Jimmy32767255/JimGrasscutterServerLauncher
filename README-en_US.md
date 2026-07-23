@@ -79,5 +79,3 @@ After completion, find the output in the .\dist folder
 1. Opening the monitoring panel may cause the server log to generate millions of EOF lines. This issue originates from line 341 of Grasscutter.java and occurs sporadically with unknown causes. If encountered, please disable the console (game.enableConsole) in the configuration file and use opencommand instead.
 
 2. First-time runs may experience unusually high lag despite low resource usage. The cause is unknown, but multiple restarts or prolonged usage may resolve the issue.
-
-3. [FE-Core](https://github.com/Jimmy32767255/FE-Core) Gaussian blur effect fails on Windows 11 Insider Preview Canary. This is a Microsoft issue that I cannot fix. This issue does not exist on the official version of Windows 11.

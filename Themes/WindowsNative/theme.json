@@ -2,6 +2,5 @@
     "name": "Windows原生",
     "font_color": "#000000",
     "background_color": "#F0F0F0",
-    "background_image": false,
-    "enable_blur": false
+    "background_image": false
 }

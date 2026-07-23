@@ -79,5 +79,3 @@ pip install -r requirements.txt
 1. 打开监控面板有可能会导致服务端日志中多出几百万行的EOF的问题，该问题是Grasscutter.java的341行导致，为偶发性故障且原因不明，如果遇到请在配置文件中禁用控制台(game.enableConsole)并使用opencommand。
 
 2. 第一次运行时可能会遇到资源占用不高但是非常卡顿的问题，原因不明，多次重启和长时间使用可能能解决此问题。
-
-3. [FE-Core](https://github.com/Jimmy32767255/FE-Core)在Windows11 Insider Preview Canary上高斯模糊效果失效，这个是微软的问题我无法修复，正式版Windows11上没有此问题。

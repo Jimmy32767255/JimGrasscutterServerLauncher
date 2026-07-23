@@ -1294,21 +1294,6 @@ Grasscutter Path: {grasscutter_path}</translation>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../Src/main_window.py" line="101"/>
-        <source>已应用背景模糊效果和透明样式</source>
-        <translation>Background blur and transparent style applied</translation>
-    </message>
-    <message>
-        <location filename="../Src/main_window.py" line="108"/>
-        <source>背景模糊效果未启用，无法移除</source>
-        <translation>Background blur effect is not enabled, cannot remove.</translation>
-    </message>
-    <message>
-        <location filename="../Src/main_window.py" line="117"/>
-        <source>已移除背景模糊效果和透明样式</source>
-        <translation>Background blur effect and transparent style removed</translation>
-    </message>
-    <message>
         <location filename="../Src/main_window.py" line="122"/>
         <source>尝试注册已存在的 PID: {pid}</source>
         <translation>Attempting to register existing PID: {pid}</translation>
@@ -2534,10 +2519,6 @@ Monitor panel will open in read-only mode, unable to send commands.</translation
         <translation type="vanished">UI Theme:</translation>
     </message>
     <message>
-        <source>面子工程</source>
-        <translation type="vanished">Face Engineering</translation>
-    </message>
-    <message>
         <source>Windows原生</source>
         <translation type="vanished">Windows Native</translation>
     </message>
@@ -2721,8 +2702,8 @@ Monitor panel will open in read-only mode, unable to send commands.</translation
     </message>
     <message>
         <location filename="../Src/theme_manager.py" line="159"/>
-        <source>读取配置文件时出错，使用默认主题FaceEngineering: {e}</source>
-        <translation>Error reading configuration file, using default theme FaceEngineering: {e}</translation>
+        <source>读取配置文件时出错，使用默认主题ModernDark: {e}</source>
+        <translation>Error reading configuration file, using default theme ModernDark: {e}</translation>
     </message>
     <message>
         <location filename="../Src/theme_manager.py" line="172"/>

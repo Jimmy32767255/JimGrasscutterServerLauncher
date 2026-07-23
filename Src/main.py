@@ -46,7 +46,7 @@ def main():
     global g_app
     g_app = QApplication(sys.argv)
 
-    # 设置应用程序属性以支持高斯模糊透明效果
+    # 设置应用程序属性以支持高DPI
     g_app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)  # 使用高DPI图像
     g_app.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 启用高DPI缩放
 
@@ -65,7 +65,6 @@ def main():
 
     # 创建并显示主窗口
     window = MainWindow(theme_manager)
-    # 窗口标题和图标现在由 CustomTitleBar 管理
     window.show()
 
     # 在主窗口显示后，应用初始主题配置

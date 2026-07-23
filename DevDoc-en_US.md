@@ -8,8 +8,7 @@ The content of the `theme.json` file is as follows:
     "name": "Theme Name",
     "font_color": "HEX Color Code, e.g. #000000",
     "background_color": "Background color, format is HEX color code, e.g. #000000",
-    "background_image": "Boolean, whether to enable background image, if true, you must also add `background.png` or `background.jpg`",
-    "enable_blur": "Boolean, whether to enable blur effect, if true, this will override `background_image`"
+    "background_image": "Boolean, whether to enable background image, if true, you must also add `background.png` or `background.jpg`"
 }
 ```
 JimGrasscutterServerLauncher also provides some built-in themes for your reference.

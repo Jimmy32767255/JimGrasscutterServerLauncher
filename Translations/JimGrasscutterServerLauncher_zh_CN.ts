@@ -1257,21 +1257,6 @@ Grasscutter路径: {grasscutter_path}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Src/main_window.py" line="101"/>
-        <source>已应用背景模糊效果和透明样式</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Src/main_window.py" line="108"/>
-        <source>背景模糊效果未启用，无法移除</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Src/main_window.py" line="117"/>
-        <source>已移除背景模糊效果和透明样式</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../Src/main_window.py" line="122"/>
         <source>尝试注册已存在的 PID: {pid}</source>
         <translation type="unfinished"></translation>
@@ -2605,7 +2590,7 @@ N/A</source>
     </message>
     <message>
         <location filename="../Src/theme_manager.py" line="159"/>
-        <source>读取配置文件时出错，使用默认主题FaceEngineering: {e}</source>
+        <source>读取配置文件时出错，使用默认主题ModernDark: {e}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

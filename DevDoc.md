@@ -8,8 +8,7 @@
     "name": "主题名",
     "font_color": "字体颜色，格式为HEX颜色代码，例如#000000",
     "background_color": "背景颜色，格式为HEX颜色代码，例如#000000",
-    "background_image": "布尔值，是否启用背景图片，如果为真，您还必须添加`background.png`或`background.jpg`",
-    "enable_blur": "布尔值，是否启用模糊效果，如果为真，这将会覆盖`background_image`"
+    "background_image": "布尔值，是否启用背景图片，如果为真，您还必须添加`background.png`或`background.jpg`"
 }
 ```
 JimGrasscutterServerLauncher也提供了一些自带主题供您参考。

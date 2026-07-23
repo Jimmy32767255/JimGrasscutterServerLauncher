@@ -3,7 +3,6 @@ import json
 import os
 from loguru import logger
 from monitor_tab import MonitorPanel
-from fe_core.blur_style import BLUR_STYLE
 from theme_manager import ThemeManager
 from update_checker import UpdateCheckThread, VERSION
 from PyQt5.QtWidgets import (
@@ -86,7 +85,7 @@ class SettingsTab(QWidget):
         except (FileNotFoundError, json.JSONDecodeError, Exception) as e:
             logger.error(self.tr(f'加载设置时出错: {e}，将使用默认设置'))
 
-        theme = config_data.get('Theme', 'FaceEngineering')
+        theme = config_data.get('Theme', 'ModernDark')
         logger.debug(self.tr(f'加载主题设置 {theme}'))
         lang = config_data.get('Language', 'zh_CN')
         auto_update = config_data.get('AutoUpdate', True)
