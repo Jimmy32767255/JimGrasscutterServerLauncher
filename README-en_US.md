@@ -28,7 +28,7 @@
   
 - [Open Source License](.\LICENSE)
   
-- [ToDo List](.\todolist.md)
+- [ToDo List](.\TODO.md)
   
 - [Code of Conduct](.\CODE_OF_CONDUCT.md)
 
