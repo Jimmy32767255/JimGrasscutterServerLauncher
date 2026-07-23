@@ -6,7 +6,7 @@ from loguru import logger
 from port_checker import check_ports
 from PyQt5.QtCore import QProcess, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox
-from utils import BASE_PATH
+from utils import BASE_PATH, get_mongod_executable_name, is_java_process, is_mongod_process
 
 class LaunchTab(QWidget):
     instance_started = pyqtSignal(str, int)
@@ -198,7 +198,7 @@ class LaunchTab(QWidget):
                                 'process_path': os.path.abspath(__file__)
                             }, f, indent=2)
                         logger.info(self.tr(f'成功写入锁文件 PID={pid}'))
-                        if psutil.pid_exists(pid) and psutil.Process(pid).name() == 'java.exe':
+                        if psutil.pid_exists(pid) and is_java_process(psutil.Process(pid).name()):
                             logger.debug(self.tr(f'进程验证成功: PID={pid}'))
                         else:
                             logger.warning(self.tr(f'进程验证失败: PID={pid}'))
@@ -222,12 +222,13 @@ class LaunchTab(QWidget):
             return
 
     def start_database_service(self):
+        mongod_name = get_mongod_executable_name()
         try:
-            # 检查进程名是否为mongod.exe
+            # 检查进程名是否为 mongod
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
-                    if proc.info['name'] == 'mongod.exe':
-                        logger.warning(self.tr(f'检测到 mongod.exe 进程，终止进程 {proc.info["pid"]}'))
+                    if is_mongod_process(proc.info['name']):
+                        logger.warning(self.tr(f'检测到 {mongod_name} 进程，终止进程 {proc.info["pid"]}'))
                         proc.terminate()
                         proc.wait()
                         # 二次检查确保进程已关闭
@@ -245,11 +246,11 @@ class LaunchTab(QWidget):
             logger.error(f'数据库启动前清理失败: {e}')
             return
 
-        self.db_process.setProgram(str(Path(self.root_dir) / 'Database' / 'mongod.exe'))
+        self.db_process.setProgram(str(Path(self.root_dir) / 'Database' / mongod_name))
         self.db_process.setArguments(['--dbpath', str(Path(self.root_dir) / 'Database' / 'Data'), '--logpath', str(Path(self.root_dir) / 'Database' / 'mongod.log'), '--bind_ip', '127.0.0.1', '--port', '27017', '--nojournal'])
         self.db_process.errorOccurred.connect(self.handle_db_error)
         self.db_process.readyReadStandardError.connect(self.handle_stderr)
-        logger.debug(f'执行命令: mongod.exe --dbpath {str(Path(self.root_dir) / "Database" / "Data")} --logpath {str(Path(self.root_dir) / "Database" / "mongod.log")} --bind_ip 127.0.0.1 --port 27017 --nojournal')
+        logger.debug(f'执行命令: {mongod_name} --dbpath {str(Path(self.root_dir) / "Database" / "Data")} --logpath {str(Path(self.root_dir) / "Database" / "mongod.log")} --bind_ip 127.0.0.1 --port 27017 --nojournal')
         self.db_process.start()
         logger.info(f'启动数据库')
         if not self.db_process.waitForStarted(3000):
@@ -362,11 +363,11 @@ class LaunchTab(QWidget):
             self.db_process.waitForFinished(3000)
             if self.db_process.state() == QProcess.Running:
                 self.db_process.kill()
-        # 额外检查并终止mongod.exe进程
+        # 额外检查并终止 mongod 进程
         for proc in psutil.process_iter(['pid', 'name']):
             try:
-                if proc.info['name'] == 'mongod.exe':
-                    logger.warning(f'检测到残留的mongod.exe进程，终止进程 {proc.info["pid"]}')
+                if is_mongod_process(proc.info['name']):
+                    logger.warning(f'检测到残留的 mongod 进程，终止进程 {proc.info["pid"]}')
                     proc.terminate()
                     proc.wait()
                     if proc.is_running():

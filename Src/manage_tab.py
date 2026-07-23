@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QInputDialog,
     QDialog, QFormLayout, QLineEdit, QFileDialog, QMessageBox, QProgressDialog
 )
-from utils import BASE_PATH
+from utils import BASE_PATH, get_java_executable_name, get_invalid_filename_chars, is_java_process
 
 class InstanceConfigDialog(QDialog):
     def __init__(self, parent=None, config=None, root_dir=None):
@@ -37,7 +37,7 @@ class InstanceConfigDialog(QDialog):
         self.grasscutter_path_btn.clicked.connect(self.select_grasscutter_path)
 
         layout.addRow(self.tr('实例名称:'), self.instance_name)
-        layout.addRow(self.tr('Java.exe路径:'), self.java_path)
+        layout.addRow(self.tr('Java 路径:'), self.java_path)
         layout.addRow(self.tr('jvm前置参数:'), self.jvm_pre_args)
         layout.addRow(self.tr('jvm后置参数:'), self.jvm_post_args)
         layout.addRow(self.tr('Grasscutter.jar路径:'), self.grasscutter_path)
@@ -79,10 +79,11 @@ class InstanceConfigDialog(QDialog):
             return ''
         latest_version = None
         latest_version_path = None
+        java_name = get_java_executable_name()
         for version_dir in os.listdir(java_dir):
             version_path = os.path.join(java_dir, version_dir)
             if os.path.isdir(version_path):
-                java_executable = os.path.join(version_path, 'bin', 'java.exe')
+                java_executable = os.path.join(version_path, 'bin', java_name)
                 if os.path.exists(java_executable):
                     if latest_version is None or version_dir > latest_version:
                         latest_version = version_dir
@@ -96,11 +97,11 @@ class InstanceConfigDialog(QDialog):
             logger.debug(self.tr(f'选择Grasscutter路径: {file_name}'))
 
     def accept(self):
-        invalid_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
+        invalid_chars = get_invalid_filename_chars()
 
         instance_name = self.instance_name.text()
         if any(char in instance_name for char in invalid_chars):
-            QMessageBox.warning(self, self.tr('错误'), self.tr('实例名称包含非法字符: \\ / : * ? " < > |'))
+            QMessageBox.warning(self, self.tr('错误'), self.tr(f'实例名称包含非法字符: {" ".join(invalid_chars)}'))
             return
         if not Path(self.grasscutter_path.text()).exists():
             QMessageBox.warning(self, self.tr('错误'), self.tr('Grasscutter.jar路径不存在'))
@@ -485,9 +486,9 @@ class ManageTab(QWidget):
             if new_instance_name == original_instance_name:
                 QMessageBox.warning(self, '错误', '新实例名称不能与原实例名称相同')
                 return
-            invalid_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
+            invalid_chars = get_invalid_filename_chars()
             if any(char in new_instance_name for char in invalid_chars):
-                QMessageBox.warning(self, '错误', '实例名称包含非法字符: \\ / : * ? " < > |')
+                QMessageBox.warning(self, '错误', f'实例名称包含非法字符: {" ".join(invalid_chars)}')
                 return
             
             servers_path = os.path.join(self.root_dir, "Servers")
@@ -584,7 +585,7 @@ class ManageTab(QWidget):
         instance_server_path_part = os.path.join('Servers', instance_name).replace('\\', '/') # 规范化路径分隔符
         try:
             for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-                if proc.info['name'] and proc.info['name'].lower() == 'java.exe':
+                if is_java_process(proc.info['name']):
                     cmdline = proc.info['cmdline']
                     if cmdline:
                         # 检查命令行参数中是否包含实例路径相关的特征字符串

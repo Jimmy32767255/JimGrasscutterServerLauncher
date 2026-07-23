@@ -704,7 +704,7 @@
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="38"/>
-        <source>Java.exe路径:</source>
+        <source>Java 路径:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -713,8 +713,8 @@ Please manually ensure MongoDB service is stopped before continuing.</translatio
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="38"/>
-        <source>Java.exe路径:</source>
-        <translation>Java.exe Path:</translation>
+        <source>Java 路径:</source>
+        <translation>Java Path:</translation>
     </message>
     <message>
         <location filename="../Src/manage_tab.py" line="39"/>

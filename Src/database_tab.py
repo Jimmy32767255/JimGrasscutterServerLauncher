@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QFileDialog, QMessageBox, QSpacerItem, QSizePolicy, QTextEdit
 )
-from utils import BASE_PATH
+from utils import BASE_PATH, get_creationflags, get_mongod_executable_name, is_mongod_process
 from database_editor_dialog import DatabaseEditorDialog
 
 class LogReaderThread(QThread):
@@ -240,12 +240,13 @@ class DatabaseTab(QWidget):
     def stop_database_service(self):
         """停止MongoDB数据库服务"""
         logger.info(self.tr("停止MongoDB服务"))
+        mongod_name = get_mongod_executable_name()
         try:
-            # 检查进程名是否为mongod.exe并终止
+            # 检查进程名是否为 mongod 并终止
             for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
                 try:
-                    if proc.info['name'] == 'mongod.exe':
-                        logger.warning(self.tr(f'检测到 mongod.exe 进程，终止进程 {proc.info["pid"]}')) 
+                    if is_mongod_process(proc.info['name']):
+                        logger.warning(self.tr(f'检测到 {mongod_name} 进程，终止进程 {proc.info["pid"]}'))
                         proc.terminate()
                         proc.wait(timeout=3)
                         # 二次检查确保进程已关闭
@@ -268,28 +269,29 @@ class DatabaseTab(QWidget):
             QMessageBox.warning(self, self.tr("警告"), self.tr(f"停止数据库服务时出错\n错误信息:{e}\n\n请手动确保MongoDB服务已停止后再继续。"))
 
     def is_mongod_running(self):
-        """检查 mongod.exe 进程是否正在运行"""
+        """检查 mongod 进程是否正在运行"""
         for proc in psutil.process_iter(['name']):
-            if proc.info['name'] == 'mongod.exe':
+            if is_mongod_process(proc.info['name']):
                 return True
         return False
 
     def start_mongod(self):
-        """启动 mongod.exe 服务"""
+        """启动 mongod 服务"""
         # 获取当前脚本所在的目录 (JGSL)
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
         # 获取项目根目录 (JimGrasscutterServerLauncher)
         project_root_dir = os.path.dirname(current_script_dir)
-        # 构建 mongod.exe 的相对路径
-        mongod_exe_path = os.path.join(project_root_dir, "Database", "mongod.exe")
+        mongod_name = get_mongod_executable_name()
+        # 构建 mongod 的相对路径
+        mongod_exe_path = os.path.join(project_root_dir, "Database", mongod_name)
         # 构建 mongod.conf 的相对路径
         mongod_conf_path = os.path.join(project_root_dir, "Database", "mongod.conf")
         # 构建数据库数据目录的相对路径
         db_path = os.path.join(project_root_dir, "Database", "Data")
 
         if not os.path.exists(mongod_exe_path):
-            logger.error(f"mongod.exe 未找到路径: {mongod_exe_path}")
-            QMessageBox.critical(self, "错误", f"启动数据库失败\nmongod.exe 未找到，请检查路径是否正确。\n预期路径: {mongod_exe_path}")
+            logger.error(f"{mongod_name} 未找到路径: {mongod_exe_path}")
+            QMessageBox.critical(self, "错误", f"启动数据库失败\n{mongod_name} 未找到，请检查路径是否正确。\n预期路径: {mongod_exe_path}")
             return False
 
         # 确保数据目录存在
@@ -303,38 +305,40 @@ class DatabaseTab(QWidget):
                 return False
 
         try:
-            logger.info(f"尝试启动 mongod.exe 从: {mongod_exe_path}")
-            # 使用 subprocess.Popen 启动 mongod.exe
+            logger.info(f"尝试启动 {mongod_name} 从: {mongod_exe_path}")
+            creationflags = get_creationflags()
+            # 使用 subprocess.Popen 启动 mongod
             if os.path.exists(mongod_conf_path):
                 logger.info(f"使用配置文件: {mongod_conf_path}")
-                subprocess.Popen([mongod_exe_path, "--config", mongod_conf_path], creationflags=subprocess.CREATE_NO_WINDOW)
+                subprocess.Popen([mongod_exe_path, "--config", mongod_conf_path], creationflags=creationflags)
             else:
                 logger.warning(f"mongod.conf 未找到于: {mongod_conf_path}，尝试无配置文件启动，可能需要手动指定 --dbpath")
-                subprocess.Popen([mongod_exe_path, "--dbpath", db_path], creationflags=subprocess.CREATE_NO_WINDOW)
-            
+                subprocess.Popen([mongod_exe_path, "--dbpath", db_path], creationflags=creationflags)
+
             # 等待一段时间让 MongoDB 启动
             time.sleep(3) # 等待3秒，可以根据实际情况调整
             if self.is_mongod_running():
-                logger.success("mongod.exe 已成功启动")
+                logger.success(f"{mongod_name} 已成功启动")
                 return True
             else:
-                logger.error("mongod.exe 启动失败或超时")
-                QMessageBox.warning(self, "警告", "启动 mongod.exe 失败或超时\n请检查日志或手动启动。")
+                logger.error(f"{mongod_name} 启动失败或超时")
+                QMessageBox.warning(self, "警告", f"启动 {mongod_name} 失败或超时\n请检查日志或手动启动。")
                 return False
         except Exception as e:
-            logger.error(f"启动 mongod.exe 失败: {e}")
+            logger.error(f"启动 {mongod_name} 失败: {e}")
             QMessageBox.critical(self, "错误", f"启动数据库失败\n错误信息: {e}")
             return False
 
     def edit_database(self):
         # 实现编辑数据库的逻辑
+        mongod_name = get_mongod_executable_name()
         if not self.is_mongod_running():
-            logger.info("mongod.exe 未运行，尝试启动...")
+            logger.info(f"{mongod_name} 未运行，尝试启动...")
             if not self.start_mongod():
-                logger.error("无法启动 mongod.exe，取消编辑数据库操作")
+                logger.error(f"无法启动 {mongod_name}，取消编辑数据库操作")
                 return # 如果启动失败，则不继续
         else:
-            logger.info("mongod.exe 正在运行")
+            logger.info(f"{mongod_name} 正在运行")
 
         mongo_url = "mongodb://127.0.0.1:27017/"
         try:

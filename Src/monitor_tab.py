@@ -13,7 +13,7 @@ from PyQt5.QtCore import (
     Qt, QTimer, QRect, QPropertyAnimation,
     pyqtProperty, QEasingCurve, QThread, pyqtSignal, QProcess, QCoreApplication
 )
-from utils import BASE_PATH
+from utils import BASE_PATH, is_java_process, is_mongod_process
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton,
     QMessageBox, QTextEdit, QLineEdit, QHBoxLayout, QDialog, QListWidgetItem
@@ -1051,7 +1051,7 @@ class MonitorTab(QWidget):
         try:
             db_status = False
             for proc in psutil.process_iter(['name', 'cmdline']):
-                if proc.info['name'] == "mongod.exe" and any('dbpath' in part for part in proc.info['cmdline']):
+                if is_mongod_process(proc.info['name']) and any('dbpath' in part for part in proc.info['cmdline']):
                     db_status = True
             if db_status:
                 self.db_status.setText(self.tr("数据库状态:已连接"))
@@ -1086,8 +1086,8 @@ class MonitorTab(QWidget):
                         if psutil.pid_exists(pid):
                             try:
                                 proc = psutil.Process(pid)
-                                # 检查进程名是否是 java.exe (Windows) 或 java (Linux/macOS) 
-                                if proc.name().lower().startswith("java"):
+                                # 检查进程名是否是 Java（兼容 Windows/Linux/macOS）
+                                if is_java_process(proc.name()):
                                     new_running_instances.append((pid, instance_path))
                                 else:
                                     logger.warning(self.tr(f'PID {pid} 进程名称不符: {proc.name()} (来自 {instance_name})，清理 lock 文件'))

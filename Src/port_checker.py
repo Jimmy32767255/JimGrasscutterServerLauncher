@@ -1,5 +1,6 @@
 import psutil
 from loguru import logger
+from utils import is_mongod_process
 
 
 def check_port(port: int, protocol: str = 'tcp', run_mode: str = None, dispatch_port: int = None, game_port: int = None) -> tuple:
@@ -16,9 +17,9 @@ def check_port(port: int, protocol: str = 'tcp', run_mode: str = None, dispatch_
             if conn.status == 'LISTEN' and conn.laddr.port == port:
                 process = psutil.Process(conn.pid) if conn.pid else None
                 process_name = process.name() if process else '未知进程'
-                # 如果是27017端口被mongod.exe占用，则认为是正常情况，不视为占用
-                if port == 27017 and process_name == 'mongod.exe':
-                    logger.debug(f'端口{port}被mongod.exe占用，视为正常情况。')
+                # 如果是27017端口被 mongod 占用，则认为是正常情况，不视为占用
+                if port == 27017 and is_mongod_process(process_name):
+                    logger.debug(f'端口{port}被 mongod 占用，视为正常情况。')
                     return (False, {})
                 # 如果是Dispatch端口且运行模式为GAME_ONLY，则视为正常情况
                 if run_mode == 'GAME_ONLY' and protocol == 'tcp' and port == dispatch_port:
