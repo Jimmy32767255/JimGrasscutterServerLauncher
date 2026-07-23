@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QFileDialog, QMessageBox, QSpacerItem, QSizePolicy, QTextEdit
 )
-from utils import BASE_PATH, get_creationflags, get_mongod_executable_name, is_mongod_process
+from utils import BASE_PATH, get_creationflags, get_mongod_executable_name, is_mongod_process, is_database_management_disabled
 from database_editor_dialog import DatabaseEditorDialog
 
 class LogReaderThread(QThread):
@@ -79,12 +79,16 @@ class DatabaseTab(QWidget):
         self.log_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         main_layout.addWidget(self.log_text)
         
-        # 初始化日志线程
+        # 初始化日志线程（仅在启用数据库管理时）
+        self.db_mgmt_disabled = is_database_management_disabled()
         self.log_path = os.path.join(BASE_PATH, 'Database', 'mongod.log')
-        self.log_reader = LogReaderThread(self.log_path)
-        self.log_reader.log_data_ready.connect(self.append_log)
-        self.log_reader.log_error.connect(self.handle_log_error)
-        self.log_reader.start()
+        if not self.db_mgmt_disabled:
+            self.log_reader = LogReaderThread(self.log_path)
+            self.log_reader.log_data_ready.connect(self.append_log)
+            self.log_reader.log_error.connect(self.handle_log_error)
+            self.log_reader.start()
+        else:
+            self.log_text.append(self.tr("[信息] 数据库管理已禁用，JGSL 不会读取 mongod 日志或管理 MongoDB 服务。"))
 
         # 按钮行布局
         button_layout = QHBoxLayout()
@@ -127,7 +131,16 @@ class DatabaseTab(QWidget):
             self.log_reader.stop()
         super().closeEvent(event)
 
+    def _ensure_db_mgmt_enabled(self):
+        """若数据库管理已禁用，则提示用户并返回 False。"""
+        if self.db_mgmt_disabled:
+            QMessageBox.information(self, self.tr("提示"), self.tr("数据库管理已禁用，此操作不可用。请使用系统包管理器管理 MongoDB。"))
+            return False
+        return True
+
     def clear_database(self):
+        if not self._ensure_db_mgmt_enabled():
+            return
         # 警告用户
         reply = QMessageBox.warning(self, self.tr("警告"), self.tr("此操作将停止数据库服务并删除所有数据，是否继续？"), 
                                   QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -152,6 +165,8 @@ class DatabaseTab(QWidget):
             QMessageBox.critical(self, self.tr("错误"), self.tr(f"清空数据库失败\n错误信息: {e}"))
 
     def export_database(self):
+        if not self._ensure_db_mgmt_enabled():
+            return
         # 实现导出数据库的逻辑
         database_path = os.path.join(BASE_PATH, "Database", "Data") # 获取 Database/Data 文件夹的绝对路径
         if not os.path.exists(database_path) or not os.path.isdir(database_path):
@@ -187,6 +202,8 @@ class DatabaseTab(QWidget):
             logger.info(self.tr("用户取消了导出数据库操作"))
 
     def import_database(self):
+        if not self._ensure_db_mgmt_enabled():
+            return
         # 实现导入数据库的逻辑
         logger.info(self.tr("开始导入数据库操作"))
         
@@ -239,6 +256,9 @@ class DatabaseTab(QWidget):
             
     def stop_database_service(self):
         """停止MongoDB数据库服务"""
+        if self.db_mgmt_disabled:
+            logger.info(self.tr("数据库管理已禁用，跳过停止 MongoDB 服务"))
+            return
         logger.info(self.tr("停止MongoDB服务"))
         mongod_name = get_mongod_executable_name()
         try:
@@ -277,6 +297,9 @@ class DatabaseTab(QWidget):
 
     def start_mongod(self):
         """启动 mongod 服务"""
+        if self.db_mgmt_disabled:
+            logger.info(self.tr("数据库管理已禁用，跳过启动 mongod"))
+            return False
         # 获取当前脚本所在的目录 (JGSL)
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
         # 获取项目根目录 (JimGrasscutterServerLauncher)
@@ -332,13 +355,16 @@ class DatabaseTab(QWidget):
     def edit_database(self):
         # 实现编辑数据库的逻辑
         mongod_name = get_mongod_executable_name()
-        if not self.is_mongod_running():
-            logger.info(f"{mongod_name} 未运行，尝试启动...")
-            if not self.start_mongod():
-                logger.error(f"无法启动 {mongod_name}，取消编辑数据库操作")
-                return # 如果启动失败，则不继续
+        if not self.db_mgmt_disabled:
+            if not self.is_mongod_running():
+                logger.info(f"{mongod_name} 未运行，尝试启动...")
+                if not self.start_mongod():
+                    logger.error(f"无法启动 {mongod_name}，取消编辑数据库操作")
+                    return # 如果启动失败，则不继续
+            else:
+                logger.info(f"{mongod_name} 正在运行")
         else:
-            logger.info(f"{mongod_name} 正在运行")
+            logger.info(self.tr("数据库管理已禁用，将直接连接到系统 MongoDB"))
 
         mongo_url = "mongodb://127.0.0.1:27017/"
         try:

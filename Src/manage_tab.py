@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QInputDialog,
     QDialog, QFormLayout, QLineEdit, QFileDialog, QMessageBox, QProgressDialog
 )
-from utils import BASE_PATH, get_java_executable_name, get_invalid_filename_chars, is_java_process
+from utils import BASE_PATH, get_java_executable_name, get_invalid_filename_chars, is_java_process, is_java_management_disabled
 
 class InstanceConfigDialog(QDialog):
     def __init__(self, parent=None, config=None, root_dir=None):
@@ -55,7 +55,10 @@ class InstanceConfigDialog(QDialog):
             if java_path == '':
                 java_path = self.global_config['default_java_version']
                 if java_path == '':
-                    java_path = self.find_latest_java()
+                    if is_java_management_disabled():
+                        java_path = 'java'
+                    else:
+                        java_path = self.find_latest_java()
             self.java_path.setText(java_path)
             self.jvm_pre_args.setText(' '.join(config.get('jvm_pre_args', [])))
             self.jvm_post_args.setText(' '.join(config.get('jvm_post_args', [])))
@@ -106,9 +109,12 @@ class InstanceConfigDialog(QDialog):
         if not Path(self.grasscutter_path.text()).exists():
             QMessageBox.warning(self, self.tr('错误'), self.tr('Grasscutter.jar路径不存在'))
             return
+        java_path = self.java_path.text() or self.global_config['default_java_version']
+        if not java_path and is_java_management_disabled():
+            java_path = 'java'
         self.instance_config = {
             'instance_name': instance_name,
-            'java_path': self.java_path.text() or self.global_config['default_java_version'],
+            'java_path': java_path,
             'jvm_pre_args': self.jvm_pre_args.text().split() or self.global_config['default_jvm_pre_args'],
             'jvm_post_args': self.jvm_post_args.text().split() or self.global_config.get('default_jvm_post_args', []),
             'grasscutter_path': self.grasscutter_path.text(),

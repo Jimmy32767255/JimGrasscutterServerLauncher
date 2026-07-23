@@ -6,7 +6,7 @@ from loguru import logger
 from port_checker import check_ports
 from PyQt5.QtCore import QProcess, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox
-from utils import BASE_PATH, get_mongod_executable_name, is_java_process, is_mongod_process
+from utils import BASE_PATH, get_mongod_executable_name, is_java_process, is_mongod_process, is_database_management_disabled
 
 class LaunchTab(QWidget):
     instance_started = pyqtSignal(str, int)
@@ -142,8 +142,8 @@ class LaunchTab(QWidget):
             else:
                 logger.warning(self.tr('由于端口配置缺失，跳过端口可用性检查。'))
 
-            # 检查是否已经有实例在运行，如果没有，则启动数据库服务
-            if not self.running_instances:
+            # 检查是否已经有实例在运行，如果没有，则启动数据库服务（仅在启用数据库管理时）
+            if not self.running_instances and not is_database_management_disabled():
                 self.start_database_service()
                 self.db_heartbeat_timer.start()
 
@@ -335,6 +335,8 @@ class LaunchTab(QWidget):
         logger.error(f'数据库启动失败: {self.db_process.errorString()}')
 
     def check_db_health(self):
+        if is_database_management_disabled():
+            return
         if self.db_process.state() != QProcess.Running:
             logger.warning('数据库进程异常，尝试重启...')
             self.start_database_service()
@@ -357,24 +359,26 @@ class LaunchTab(QWidget):
                     self.process_finished_signal.emit(pid)
                 self.remove_lock_file(instance_dir)
                 del self.running_instances[instance_name]
-        # 终止数据库进程
-        if self.db_process.state() == QProcess.Running:
-            self.db_process.terminate()
-            self.db_process.waitForFinished(3000)
+        # 禁用数据库管理时，不终止 mongod 进程
+        if not is_database_management_disabled():
+            # 终止数据库进程
             if self.db_process.state() == QProcess.Running:
-                self.db_process.kill()
-        # 额外检查并终止 mongod 进程
-        for proc in psutil.process_iter(['pid', 'name']):
-            try:
-                if is_mongod_process(proc.info['name']):
-                    logger.warning(f'检测到残留的 mongod 进程，终止进程 {proc.info["pid"]}')
-                    proc.terminate()
-                    proc.wait()
-                    if proc.is_running():
-                        proc.kill()
+                self.db_process.terminate()
+                self.db_process.waitForFinished(3000)
+                if self.db_process.state() == QProcess.Running:
+                    self.db_process.kill()
+            # 额外检查并终止 mongod 进程
+            for proc in psutil.process_iter(['pid', 'name']):
+                try:
+                    if is_mongod_process(proc.info['name']):
+                        logger.warning(f'检测到残留的 mongod 进程，终止进程 {proc.info["pid"]}')
+                        proc.terminate()
                         proc.wait()
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
+                        if proc.is_running():
+                            proc.kill()
+                            proc.wait()
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    pass
         # 停止心跳检测
         self.db_heartbeat_timer.stop()
         # 重置计数器

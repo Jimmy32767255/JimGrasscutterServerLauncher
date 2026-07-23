@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 import subprocess
 
 IS_WINDOWS = sys.platform == 'win32'
@@ -44,5 +45,25 @@ def get_creationflags():
     if IS_WINDOWS:
         return subprocess.CREATE_NO_WINDOW
     return 0
+
+def load_jgsl_config():
+    """读取并返回 Config/config.json 内容，文件不存在或解析失败时返回空字典。"""
+    config_file = os.path.join(BASE_PATH, 'Config', 'config.json')
+    try:
+        if os.path.exists(config_file):
+            with open(config_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception as e:
+        logger = __import__('loguru').logger
+        logger.warning(f'读取配置文件 {config_file} 失败: {e}')
+    return {}
+
+def is_java_management_disabled():
+    """是否禁用 JGSL 的 Java 管理（启用后使用系统 Java）。"""
+    return load_jgsl_config().get('DisableJavaManagement', False)
+
+def is_database_management_disabled():
+    """是否禁用 JGSL 的数据库管理（启用后由外部/系统管理 MongoDB）。"""
+    return load_jgsl_config().get('DisableDatabaseManagement', False)
 
 BASE_PATH = get_base_path()

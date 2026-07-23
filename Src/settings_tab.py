@@ -31,6 +31,10 @@ class SettingsTab(QWidget):
         self.auto_update = QCheckBox(self.tr("启用自动更新"))
         self.update_status_label = QLabel(self.tr(f"当前版本: {VERSION}")) # 显示当前版本
 
+        # GNU/Linux 兼容开关
+        self.disable_java_mgmt = QCheckBox(self.tr("禁用 Java 管理（使用系统 Java）"))
+        self.disable_db_mgmt = QCheckBox(self.tr("禁用数据库管理（不读日志，仅执行指令）"))
+
         # 最大日志行数
         self.max_log_label = QLabel(self.tr("最大日志行数:"))
         self.max_log_spin = QSpinBox()
@@ -56,6 +60,8 @@ class SettingsTab(QWidget):
         layout.addWidget(self.lang_combo)
         layout.addWidget(self.auto_update)
         layout.addWidget(self.update_status_label)
+        layout.addWidget(self.disable_java_mgmt)
+        layout.addWidget(self.disable_db_mgmt)
         layout.addLayout(log_line_layout)
         layout.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
         layout.addWidget(self.save_btn)
@@ -90,11 +96,15 @@ class SettingsTab(QWidget):
         lang = config_data.get('Language', 'zh_CN')
         auto_update = config_data.get('AutoUpdate', True)
         max_log_lines = config_data.get('MaxLogLines', 100)
+        disable_java_mgmt = config_data.get('DisableJavaManagement', False)
+        disable_db_mgmt = config_data.get('DisableDatabaseManagement', False)
 
         self.max_log_spin.setValue(max_log_lines)
         self.theme_manager.load_theme_setting(config_data)
         self.lang_combo.setCurrentText(self.tr('简体中文') if lang == 'zh_CN' else self.tr('English'))
         self.auto_update.setChecked(auto_update)
+        self.disable_java_mgmt.setChecked(disable_java_mgmt)
+        self.disable_db_mgmt.setChecked(disable_db_mgmt)
 
         # 如果启用了自动更新，就在加载设置后启动检查
         if auto_update:
@@ -105,6 +115,8 @@ class SettingsTab(QWidget):
         lang = 'zh_CN' if self.lang_combo.currentText() == self.tr('简体中文') else 'en_US'
         auto_update = self.auto_update.isChecked()
         max_log_lines = self.max_log_spin.value()
+        disable_java_mgmt = self.disable_java_mgmt.isChecked()
+        disable_db_mgmt = self.disable_db_mgmt.isChecked()
 
         config_data = {}
         try:
@@ -119,6 +131,8 @@ class SettingsTab(QWidget):
         config_data['Language'] = lang
         config_data['AutoUpdate'] = auto_update
         config_data['MaxLogLines'] = max_log_lines
+        config_data['DisableJavaManagement'] = disable_java_mgmt
+        config_data['DisableDatabaseManagement'] = disable_db_mgmt
 
         try:
             config_dir = os.path.dirname(CONFIG_FILE)
