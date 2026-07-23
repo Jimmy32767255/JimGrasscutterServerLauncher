@@ -1,0 +1,125 @@
+# AppImage Builder 配置文件
+# 用于构建 JimGrasscutterServerLauncher 的 AppImage 包
+
+version: 1
+
+script:
+  # 创建 AppDir 结构
+  - rm -rf $TARGET_APPDIR || true
+  - mkdir -p $TARGET_APPDIR/usr/share/jimgrasscutterserverlauncher
+  - mkdir -p $TARGET_APPDIR/usr/bin
+  - mkdir -p $TARGET_APPDIR/usr/share/applications
+  - mkdir -p $TARGET_APPDIR/usr/share/icons/hicolor/256x256/apps
+  - mkdir -p $TARGET_APPDIR/usr/share/pixmaps
+
+  # 复制程序文件
+  - cp -r $SOURCE_DIR/Src $TARGET_APPDIR/usr/share/jimgrasscutterserverlauncher/
+  - cp -r $SOURCE_DIR/Assets $TARGET_APPDIR/usr/share/jimgrasscutterserverlauncher/
+  - cp -r $SOURCE_DIR/Themes $TARGET_APPDIR/usr/share/jimgrasscutterserverlauncher/
+  - cp -r $SOURCE_DIR/Translations $TARGET_APPDIR/usr/share/jimgrasscutterserverlauncher/
+
+  # 复制图标（若不存在 PNG 图标，需提前使用 ImageMagick 等工具从 JGSL-Logo.ico 转换）
+  - cp $SOURCE_DIR/Assets/JGSL-Logo.png $TARGET_APPDIR/usr/share/icons/hicolor/256x256/apps/jimgrasscutterserverlauncher.png
+  - cp $SOURCE_DIR/Assets/JGSL-Logo.png $TARGET_APPDIR/usr/share/pixmaps/jimgrasscutterserverlauncher.png
+
+  # 创建启动脚本
+  - |
+    cat > $TARGET_APPDIR/usr/bin/jimgrasscutterserverlauncher << 'EOF'
+    #!/bin/bash
+    # JimGrasscutterServerLauncher AppImage 启动脚本
+
+    # 获取 AppDir 路径
+    APP_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+
+    # AppImage 内程序目录为只读，将用户数据目录指向 HOME 下的可写位置
+    export JGSL_APPDATA_DIR="${HOME}/.config/JimGrasscutterServerLauncher"
+    mkdir -p "$JGSL_APPDATA_DIR"
+
+    # 设置 Python 路径
+    export PYTHONPATH="$APP_DIR/usr/share/jimgrasscutterserverlauncher:$PYTHONPATH"
+
+    # 启动程序
+    exec python3 "$APP_DIR/usr/share/jimgrasscutterserverlauncher/Src/main.py" "$@"
+    EOF
+  - chmod +x $TARGET_APPDIR/usr/bin/jimgrasscutterserverlauncher
+
+  # 创建桌面文件
+  - |
+    cat > $TARGET_APPDIR/usr/share/applications/jimgrasscutterserverlauncher.desktop << 'EOF'
+    [Desktop Entry]
+    Name=JimGrasscutterServerLauncher
+    Comment=Grasscutter 服务端管理器
+    Exec=jimgrasscutterserverlauncher
+    Icon=jimgrasscutterserverlauncher
+    Terminal=false
+    Type=Application
+    Categories=Game;Utility
+    StartupNotify=true
+    EOF
+
+  # 创建 AppRun 脚本
+  - |
+    cat > $TARGET_APPDIR/AppRun << 'EOF'
+    #!/bin/bash
+    # AppImage 入口点
+
+    # 获取 AppDir 路径
+    SELF=$(readlink -f "$0")
+    HERE=${SELF%/*}
+
+    # AppImage 内程序目录为只读，将用户数据目录指向 HOME 下的可写位置
+    export JGSL_APPDATA_DIR="${HOME}/.config/JimGrasscutterServerLauncher"
+    mkdir -p "$JGSL_APPDATA_DIR"
+
+    # 设置环境变量
+    export PATH="$HERE/usr/bin:$PATH"
+    export PYTHONPATH="$HERE/usr/share/jimgrasscutterserverlauncher:$PYTHONPATH"
+
+    # 启动程序
+    exec python3 "$HERE/usr/share/jimgrasscutterserverlauncher/Src/main.py" "$@"
+    EOF
+  - chmod +x $TARGET_APPDIR/AppRun
+
+  # 创建 .desktop 文件到根目录
+  - cp $TARGET_APPDIR/usr/share/applications/jimgrasscutterserverlauncher.desktop $TARGET_APPDIR/jimgrasscutterserverlauncher.desktop
+
+AppDir:
+  path: ./AppDir
+
+  app_info:
+    id: com.github.jimmy32767255.jimgrasscutterserverlauncher
+    name: JimGrasscutterServerLauncher
+    icon: jimgrasscutterserverlauncher
+    version: 2.0.0
+    exec: usr/bin/jimgrasscutterserverlauncher
+    exec_args: "$@"
+
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: 'deb http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
+      - sourceline: 'deb http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse'
+      - sourceline: 'deb http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse'
+
+    include:
+      - python3
+      - python3-pyqt5
+      - python3-pyqt5.sip
+      - libportaudio2
+      - libqt5core5a
+      - libqt5gui5
+      - libqt5widgets5
+
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
+
+AppImage:
+  arch: x86_64
+  update-information: guess
+  sign-key: None

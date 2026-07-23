@@ -39,3 +39,11 @@ Themes:JGSL的主题文件目录(包含JGSL的主题文件)
 Translations:JGSL的翻译文件
 
 Web:公共网页目录(所有Grasscutter实例共享同一个网页目录，用于Grasscutter的网页功能)
+
+Build.sh:GNU/Linux AppImage 构建脚本(使用 appimagetool)
+
+AppImageBuilder.yml:appimage-builder 工具配置文件
+
+build-appimage:AppImage 构建临时目录(运行 Build.sh 后生成)
+
+dist:构建产物输出目录(运行 Build.sh 后生成)

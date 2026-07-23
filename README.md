@@ -50,23 +50,50 @@ pip install -r requirements.txt
 
 #### 运行JGSL:
 
-在项目根目录执行：
+Windows 在项目根目录执行：
+
+```bat
+.\Start.bat
+```
+
+GNU/Linux 在项目根目录执行：
 
 ```bash
-.\Start.bat
+python ./Src/main.py
 ```
 
 ## 构建/编译
 
 ###### 不建议，除非需要在没有python的环境中使用，spec文件目前有问题，而且会产生更大的空间占用
 
+### Windows
+
 在项目根目录执行：
 
-```bash
+```bat
 .\build.bat
 ```
 
-完成后，在.\dist文件夹中找到产物
+完成后，在 `.\dist` 文件夹中找到产物。
+
+### GNU/Linux (AppImage)
+
+需要先安装 `python3`、`pip`、`wget` 以及 `convert` (ImageMagick，用于图标转换)，然后在项目根目录执行：
+
+```bash
+chmod +x Build.sh
+./Build.sh
+```
+
+完成后，在 `./dist/GNU-Linux-amd64.AppImage` 找到产物。
+
+也可以使用 `appimage-builder`：
+
+```bash
+appimage-builder --recipe AppImageBuilder.yml
+```
+
+AppImage 运行时，用户数据会写入 `~/.config/JimGrasscutterServerLauncher`。
 
 ## 社交媒体
 

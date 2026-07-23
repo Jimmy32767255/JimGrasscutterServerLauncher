@@ -5,6 +5,11 @@ import subprocess
 IS_WINDOWS = sys.platform == 'win32'
 
 def get_base_path():
+    # AppImage 等只读挂载场景下，通过环境变量指定可写数据目录
+    appdata_dir = os.environ.get('JGSL_APPDATA_DIR')
+    if appdata_dir:
+        os.makedirs(appdata_dir, exist_ok=True)
+        return appdata_dir
     if getattr(sys, 'frozen', False):
         # 打包后，sys.executable 是程序文件路径
         return os.path.dirname(sys.executable)

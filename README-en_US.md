@@ -24,13 +24,13 @@
 
 ## Documentation
 
-- [Directory Structure](.\DirInfo.md)
+- [Directory Structure](DirInfo.md)
   
-- [Open Source License](.\LICENSE)
+- [Open Source License](LICENSE)
   
-- [ToDo List](.\TODO.md)
+- [ToDo List](TODO.md)
   
-- [Code of Conduct](.\CODE_OF_CONDUCT.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
 
 - [Development Documentation](DevDoc-en_US.md)
 
@@ -50,23 +50,50 @@ pip install -r requirements.txt
 
 #### Run JGSL:
 
-Run in the project root directory:
+On Windows, run in the project root directory:
+
+```bat
+.\Start.bat
+```
+
+On GNU/Linux, run in the project root directory:
 
 ```bash
-.\Start.bat
+python ./Src/main.py
 ```
 
 ## Build/Compile
 
 ###### Not recommended unless you need to use it in a Python-free environment. The spec file currently has issues and will result in larger file sizes.
 
+### Windows
+
 Run in the project root directory:
 
-```bash
+```bat
 .\build.bat
 ```
 
-After completion, find the output in the .\dist folder
+After completion, find the output in the `.\dist` folder.
+
+### GNU/Linux (AppImage)
+
+Make sure `python3`, `pip`, `wget`, and `convert` (ImageMagick, for icon conversion) are installed, then run in the project root directory:
+
+```bash
+chmod +x Build.sh
+./Build.sh
+```
+
+After completion, find the output at `./dist/GNU-Linux-amd64.AppImage`.
+
+Alternatively, use `appimage-builder`:
+
+```bash
+appimage-builder --recipe AppImageBuilder.yml
+```
+
+When running the AppImage, user data will be written to `~/.config/JimGrasscutterServerLauncher`.
 
 ## Social Media
 
